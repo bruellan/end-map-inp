@@ -24,6 +24,13 @@ const props = withDefaults(
     delay?: number
     /** Proportion visible avant déclenchement. */
     threshold?: number
+    /**
+     * Marge appliquée au viewport avant de tester l'intersection.
+     * Une valeur négative en bas retarde le déclenchement : utile pour
+     * un élément rogné par un `overflow: hidden`, dont la proportion
+     * visible n'atteint jamais un seuil élevé.
+     */
+    rootMargin?: string
     /** Élément rendu, pour ne pas casser la sémantique du parent. */
     as?: string
   }>(),
@@ -31,6 +38,7 @@ const props = withDefaults(
     animation: 'animate-fade-in-up',
     delay: 0,
     threshold: 0.15,
+    rootMargin: '0px',
     as: 'div',
   },
 )
@@ -45,7 +53,7 @@ const { stop } = useIntersectionObserver(
     revealed.value = true
     stop()
   },
-  { threshold: props.threshold },
+  { threshold: props.threshold, rootMargin: props.rootMargin },
 )
 </script>
 

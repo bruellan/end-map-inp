@@ -250,6 +250,23 @@ immédiatement — `useFetch` rend `Ref<T | undefined>` là où `useMetierDraft`
 
 C'est noté ici parce qu'un vert qui ne vérifie rien est pire qu'un rouge.
 
+## Ce que je n'ai pas pu vérifier
+
+Les captures headless m'ont servi à comparer le rendu à la maquette, mais elles ont
+deux angles morts qu'il faut connaître avant de se fier à ce document :
+
+- **`--dump-dom` ne peint pas**, donc `IntersectionObserver` ne se déclenche jamais :
+  tout ce qui dépend du scroll-reveal y apparaît figé sur `pending`. Seules les
+  captures d'écran, qui forcent un rendu, disent la vérité sur ce point.
+- **`--virtual-time-budget` supprime `requestAnimationFrame`**, dont dépend
+  `<Transition>` pour passer de `-from` à `-to`. Les transitions Vue restent bloquées
+  et l'élément sortant n'est jamais retiré. En navigateur réel le cycle se termine
+  normalement, mais je n'ai pas pu l'observer ici.
+
+Concrètement : le glissement entre cartes et le déclenchement de l'entrée du collage
+sont corrects en lecture de code, pas vérifiés à l'exécution. À regarder en premier
+dans un vrai navigateur.
+
 ## Ce qui a été vérifié
 
 À la main, via l'API et le HTML rendu :
