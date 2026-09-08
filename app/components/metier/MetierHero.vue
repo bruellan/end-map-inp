@@ -2,7 +2,11 @@
 import type { MetierHero } from '#shared/schemas/metier'
 import { COLLAGE_ASPECT } from './collageLayout'
 
-const props = defineProps<{ hero: MetierHero }>()
+const props = defineProps<{
+  hero: MetierHero
+  /** Vrai dès que le panneau de contenu est arrivé en haut. */
+  docked?: boolean
+}>()
 
 /**
  * Séquence d'ouverture.
@@ -58,13 +62,22 @@ const pieces = computed(() =>
     </div>
   </div>
 
-  <!-- Titre : au-dessus du panneau, il reste lisible en haut. -->
-  <header class="hero-title relative flex flex-col items-center gap-2 px-6 pt-24 text-center">
-    <p v-if="hero.eyebrow" class="text-label text-tertiary font-medium">{{ hero.eyebrow }}</p>
-    <h1 class="text-display text-primary font-semibold whitespace-pre-line">
-      {{ hero.title }}
-    </h1>
-  </header>
+  <!--
+    Rail du titre : il borne la durée pendant laquelle le titre reste
+    accroché en haut. Passé le bout de la course, le titre s'en va avec
+    la page (voir assets/css/hero.css).
+  -->
+  <div class="hero-title-track">
+    <header
+      class="hero-title flex flex-col items-center gap-2 px-6 pt-24 text-center"
+      :class="{ 'is-docked': docked }"
+    >
+      <p v-if="hero.eyebrow" class="text-label text-tertiary font-medium">{{ hero.eyebrow }}</p>
+      <h1 class="text-display text-primary font-semibold whitespace-pre-line">
+        {{ hero.title }}
+      </h1>
+    </header>
+  </div>
 </template>
 
 <style scoped>

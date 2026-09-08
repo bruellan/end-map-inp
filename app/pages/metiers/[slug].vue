@@ -35,19 +35,22 @@ const visibleSections = computed(() => metier.value?.sections.filter((s) => s.vi
 const BLEEDS_TO_BOTTOM: ReadonlySet<SectionType> = new Set<SectionType>(['tips'])
 
 /**
- * La barre d'actions n'apparaît qu'une fois le panneau blanc remonté
- * jusqu'en haut : avant, elle se superposerait au titre.
+ * Le panneau est-il arrivé en haut ?
+ *
+ * Deux choses en dépendent : la barre d'actions, qui ne doit pas se
+ * superposer au titre avant, et le reflet joué sur le titre au moment
+ * où il s'immobilise.
  *
  * Une sentinelle placée en tête du panneau sert de repère — on regarde
  * si elle est passée au-dessus du bord haut, plutôt que de comparer une
  * position de défilement à une hauteur d'en-tête qu'il faudrait mesurer.
  */
 const panelTop = useTemplateRef<HTMLElement>('panelTop')
-const showTopBar = ref(false)
+const panelDocked = ref(false)
 useIntersectionObserver(
   panelTop,
   ([entry]) => {
-    if (entry) showTopBar.value = entry.boundingClientRect.top <= 0
+    if (entry) panelDocked.value = entry.boundingClientRect.top <= 0
   },
   { threshold: 0 },
 )
@@ -73,7 +76,7 @@ useSeoMeta({
       remontant mais passe sous le titre, qui reste en haut.
       Les hauteurs sont partagées dans assets/css/hero.css.
     -->
-    <MetierHero :hero="metier.hero" />
+    <MetierHero :hero="metier.hero" :docked="panelDocked" />
 
     <div class="hero-panel bg-surface-light rounded-t-xl">
       <div class="hero-panel-content">
@@ -112,7 +115,7 @@ useSeoMeta({
     -->
     <Transition name="fade">
       <div
-        v-if="showTopBar"
+        v-if="panelDocked"
         class="bg-surface-light/80 fixed inset-x-0 top-0 z-30 mx-auto max-w-[402px] backdrop-blur-sm"
       >
         <MetierTopBar />

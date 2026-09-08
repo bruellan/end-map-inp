@@ -64,7 +64,7 @@ const items = computed(() =>
     <button
       v-if="entry.piece.title"
       type="button"
-      class="collage-item absolute cursor-pointer transition-transform duration-200 ease-out active:scale-95"
+      class="collage-item pointer-events-auto absolute cursor-pointer transition-transform duration-200 ease-out active:scale-95"
       :style="entry.style"
       :aria-label="`En savoir plus : ${entry.piece.title}`"
       @click="emit('open', entry.piece)"

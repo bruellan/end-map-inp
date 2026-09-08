@@ -39,7 +39,7 @@
    * du titre, là où il doit s'arrêter. C'est la longueur de défilement
    * « absorbée » par la remontée.
    */
-  --hero-rise: calc(var(--hero-height) - var(--hero-panel-overlap) - var(--hero-title-height));
+  --hero-rise: calc(var(--hero-height) - var(--hero-panel-overlap));
 }
 
 /**
@@ -62,9 +62,28 @@
 }
 
 /**
- * Bloc de titre. Remonté par-dessus le fond par une marge négative, puis
- * retenu en haut : il ne bouge plus, ni pendant la remontée du panneau,
- * ni après.
+ * Rail du titre.
+ *
+ * C'est lui qui décide combien de temps le titre reste accroché en haut.
+ * `position: sticky` retient un élément tant que son conteneur est à
+ * l'écran : en donnant au rail la hauteur de la course plus celle du
+ * titre, le titre se décroche exactement quand le panneau arrive en
+ * haut, et s'en va ensuite avec la page.
+ *
+ * Il ne capte pas le pointeur : il couvre le collage sur toute la
+ * course, et une illustration cliquable doit rester atteignable.
+ */
+.hero-title-track {
+  position: relative;
+  z-index: 20;
+  height: calc(var(--hero-rise) + var(--hero-title-height));
+  margin-top: calc(-1 * var(--hero-height));
+  pointer-events: none;
+  animation: heroTrackCollapse 0.9s var(--ease-drawer) 1.9s both;
+}
+
+/**
+ * Bloc de titre.
  *
  * Sans fond propre, volontairement. Un fond opaque trancherait le
  * collage net à sa hauteur, masquerait le bord arrondi du panneau qui
@@ -75,28 +94,59 @@
 .hero-title {
   position: sticky;
   top: 0;
-  z-index: 20;
   height: var(--hero-title-height);
-  margin-top: calc(-1 * var(--hero-height));
-  animation: heroTitleLift 0.9s var(--ease-drawer) 1.9s both;
+  /* Rogne le reflet, qui déborde volontairement de la boîte. */
+  overflow: hidden;
+  animation: heroTitleFade 0.9s var(--ease-drawer) 1.9s both;
+}
+
+/**
+ * Reflet joué une fois, au moment où le titre s'immobilise sur le
+ * panneau blanc. Une bande diagonale aux couleurs de la marque balaie
+ * du coin haut-gauche au coin bas-droit.
+ *
+ * `inset: -50%` donne à la bande de quoi entrer et sortir hors cadre ;
+ * c'est le `overflow: hidden` du titre qui la rogne.
+ */
+.hero-title::after {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 44%,
+    rgb(255 107 54 / 0.5) 49%,
+    rgb(245 119 213 / 0.55) 53%,
+    rgb(143 191 255 / 0.5) 57%,
+    transparent 62%
+  );
+}
+
+.hero-title.is-docked::after {
+  animation: titleShine 0.75s var(--ease-out) both;
 }
 
 /**
  * Panneau de contenu. En flux normal : c'est lui qui donne sa hauteur au
- * document. Sa marge le place sous l'en-tête, le chevauchement près.
+ * document.
+ *
+ * Le rail du titre occupe déjà `course + titre` dans le flux : reculer
+ * d'une hauteur de titre pose le panneau exactement au bout de la
+ * course. Il suit donc le repli de l'en-tête sans animation propre.
  */
 .hero-panel {
   position: relative;
   z-index: 10;
-  margin-top: calc(var(--hero-height) - var(--hero-title-height) - var(--hero-panel-overlap));
-  animation: heroPanelSettle 0.9s var(--ease-drawer) 1.9s both;
+  margin-top: calc(-1 * var(--hero-title-height));
 }
 
 /* ── Séquence d'ouverture ─────────────────────────────────────────── */
 
 /**
- * Les trois keyframes partagent durée, délai et courbe : elles décrivent
- * un seul mouvement, celui de l'en-tête qui passe du plein écran à sa
+ * Ces keyframes partagent durée, délai et courbe : elles décrivent un
+ * seul mouvement, celui de l'en-tête qui passe du plein écran à sa
  * hauteur définitive. Les séparer est une contrainte du CSS, pas une
  * intention.
  */
@@ -112,25 +162,37 @@
   }
 }
 
-@keyframes heroTitleLift {
+@keyframes heroTrackCollapse {
   from {
     margin-top: calc(-1 * var(--hero-height-intro));
-    opacity: 0;
+    height: calc(var(--hero-height-intro) - var(--hero-panel-overlap) + var(--hero-title-height));
   }
   to {
     margin-top: calc(-1 * var(--hero-height));
+    height: calc(var(--hero-rise) + var(--hero-title-height));
+  }
+}
+
+@keyframes heroTitleFade {
+  from {
+    opacity: 0;
+  }
+  to {
     opacity: 1;
   }
 }
 
-@keyframes heroPanelSettle {
+@keyframes titleShine {
   from {
-    margin-top: calc(
-      var(--hero-height-intro) - var(--hero-title-height) - var(--hero-panel-overlap)
-    );
+    opacity: 0;
+    transform: translate(-55%, -55%);
+  }
+  25% {
+    opacity: 1;
   }
   to {
-    margin-top: calc(var(--hero-height) - var(--hero-title-height) - var(--hero-panel-overlap));
+    opacity: 0;
+    transform: translate(55%, 55%);
   }
 }
 
