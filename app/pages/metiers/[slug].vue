@@ -27,12 +27,12 @@ const visibleSections = computed(() => metier.value?.sections.filter((s) => s.vi
 
 useSeoMeta({
   title: () => (metier.value ? `${metier.value.hero.title} — Edumapper` : 'Edumapper'),
-  description: () => metier.value?.hero.tagline,
+  description: () => metier.value?.hero.subtitle,
 })
 </script>
 
 <template>
-  <article v-if="metier">
+  <article v-if="metier" class="pt-8 pb-18">
     <MetierHero :hero="metier.hero" />
 
     <!--
@@ -41,19 +41,20 @@ useSeoMeta({
       nouvelle position au lieu de sauter. L'animation FLIP est calculée
       par Vue, on ne fournit que les classes (voir transitions.css).
     -->
-    <TransitionGroup name="section-list" tag="div" class="divide-border-light relative divide-y">
-      <component
-        :is="sectionComponents[section.type]"
-        v-for="section in visibleSections"
-        :key="section.id"
-        :section="section"
-      />
+    <TransitionGroup name="section-list" tag="div" class="relative flex flex-col gap-10 pt-12">
+      <div v-for="section in visibleSections" :key="section.id" class="px-4">
+        <component :is="sectionComponents[section.type]" :section="section" />
+
+        <!-- Le trait déborde la gouttière : pleine largeur dans la
+             maquette, d'où les marges négatives. -->
+        <hr v-if="section.separatorAfter" class="bg-surface-overlay-5 -mx-4 mt-10 h-0.5 border-0" />
+      </div>
     </TransitionGroup>
 
-    <footer class="px-5 py-8 text-center">
+    <footer class="px-4 pt-12 text-center">
       <NuxtLink
         :to="`/${slug}/editor`"
-        class="text-tertiary text-sm font-medium underline underline-offset-4"
+        class="text-label text-tertiary font-medium underline underline-offset-4"
       >
         Modifier cette page
       </NuxtLink>

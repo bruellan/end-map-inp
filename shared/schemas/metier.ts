@@ -17,6 +17,9 @@ import { z } from 'zod'
  *   2. ajouter la 15e section, c'est ajouter un membre ici, un composant
  *      d'affichage et un composant d'édition. Ni la page ni l'éditeur ne
  *      changent.
+ *
+ * Les variantes correspondent aux blocs de la maquette Figma
+ * « PE - Test » (node 1-262).
  */
 
 /* ── Enveloppe commune ────────────────────────────────────────────── */
@@ -33,89 +36,105 @@ const sectionBaseSchema = z.object({
   title: z.string(),
   /** Permet à l'équipe de retirer une section sans perdre son contenu. */
   visible: z.boolean(),
+  /**
+   * Trait pleine largeur sous la section. Dans la maquette il ne suit
+   * pas toutes les sections — c'est un choix éditorial, donc un champ,
+   * pas une règle de mise en page.
+   */
+  separatorAfter: z.boolean(),
 })
 
 /* ── Variantes de section ─────────────────────────────────────────── */
 
-/** Texte libre. Utilisé pour « En quoi consiste ce métier ? ». */
-const richTextSectionSchema = sectionBaseSchema.extend({
-  type: z.literal('richText'),
-  body: z.string(),
-})
-
-/** Fourchettes de rémunération par niveau d'expérience. */
-const salarySectionSchema = sectionBaseSchema.extend({
-  type: z.literal('salary'),
-  currency: z.string(),
-  period: z.enum(['month', 'year']),
-  levels: z.array(
-    z.object({
-      id: z.string().min(1),
-      label: z.string(),
-      min: z.number().int().nonnegative(),
-      max: z.number().int().nonnegative(),
-    }),
-  ),
-})
-
-/** Parcours de formation, du bac au diplôme visé. */
-const studiesSectionSchema = sectionBaseSchema.extend({
-  type: z.literal('studies'),
-  steps: z.array(
-    z.object({
-      id: z.string().min(1),
-      /** Niveau visé, p. ex. « Bac +5 ». */
-      level: z.string(),
-      label: z.string(),
-      description: z.string(),
-    }),
-  ),
-})
-
-/** Débouchés : secteurs ou postes accessibles. */
-const outletsSectionSchema = sectionBaseSchema.extend({
-  type: z.literal('outlets'),
+/** Grille de cartes métier (bloc « Sections » de la maquette). */
+const metierCardsSectionSchema = sectionBaseSchema.extend({
+  type: z.literal('metierCards'),
   items: z.array(
     z.object({
       id: z.string().min(1),
       label: z.string(),
-      description: z.string(),
-      /** Emoji, aligné sur l'iconographie 3D d'Edumapper. */
+      imageUrl: z.string().url().or(z.literal('')),
+    }),
+  ),
+})
+
+/** Texte de présentation repliable (bloc « À propos »). */
+const aboutSectionSchema = sectionBaseSchema.extend({
+  type: z.literal('about'),
+  body: z.string(),
+  /** Libellé du bouton de dépliage. Vide = texte affiché en entier. */
+  expandLabel: z.string(),
+})
+
+/** Chiffres clés en grille (bloc « Statistics »). */
+const statisticsSectionSchema = sectionBaseSchema.extend({
+  type: z.literal('statistics'),
+  items: z.array(
+    z.object({
+      id: z.string().min(1),
+      /** Déjà formaté : « 2 000 € », « 1,3 million ». */
+      value: z.string(),
+      label: z.string(),
       icon: z.string(),
     }),
   ),
 })
 
-/** Témoignages de professionnels en poste. */
-const testimonialsSectionSchema = sectionBaseSchema.extend({
-  type: z.literal('testimonials'),
+/** Questions fréquentes en accordéon (bloc « Bon à savoir »). */
+const faqSectionSchema = sectionBaseSchema.extend({
+  type: z.literal('faq'),
   items: z.array(
     z.object({
       id: z.string().min(1),
-      author: z.string(),
-      role: z.string(),
-      quote: z.string(),
-      avatarUrl: z.string().url().or(z.literal('')),
+      question: z.string(),
+      answer: z.string(),
+      icon: z.string(),
     }),
   ),
+})
+
+/** Onglets pour et contre (bloc « Le métier sans filtre »). */
+const prosConsSectionSchema = sectionBaseSchema.extend({
+  type: z.literal('prosCons'),
+  tabs: z.array(
+    z.object({
+      id: z.string().min(1),
+      label: z.string(),
+      icon: z.string(),
+      entries: z.array(
+        z.object({
+          id: z.string().min(1),
+          title: z.string(),
+          body: z.string(),
+        }),
+      ),
+    }),
+  ),
+})
+
+/** Encart d'appel à l'action (bloc « Quiz »). */
+const quizCtaSectionSchema = sectionBaseSchema.extend({
+  type: z.literal('quizCta'),
+  subtitle: z.string(),
+  ctaLabel: z.string(),
+  ctaHref: z.string(),
 })
 
 /* ── Union & page ─────────────────────────────────────────────────── */
 
 export const sectionSchema = z.discriminatedUnion('type', [
-  richTextSectionSchema,
-  salarySectionSchema,
-  studiesSectionSchema,
-  outletsSectionSchema,
-  testimonialsSectionSchema,
+  metierCardsSectionSchema,
+  aboutSectionSchema,
+  statisticsSectionSchema,
+  faqSectionSchema,
+  prosConsSectionSchema,
+  quizCtaSectionSchema,
 ])
 
 /** En-tête de la page, hors liste de sections car toujours présent. */
 export const metierHeroSchema = z.object({
   title: z.string(),
-  tagline: z.string(),
-  emoji: z.string(),
-  coverUrl: z.string().url().or(z.literal('')),
+  subtitle: z.string(),
 })
 
 export const metierSchema = z.object({

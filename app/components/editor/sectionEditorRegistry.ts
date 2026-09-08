@@ -1,11 +1,12 @@
 import type { Component } from 'vue'
 import type { SectionType } from '#shared/schemas/metier'
 import {
-  EditorRichTextFields,
-  EditorSalaryFields,
-  EditorStudiesFields,
-  EditorOutletsFields,
-  EditorTestimonialsFields,
+  EditorMetierCardsFields,
+  EditorAboutFields,
+  EditorStatisticsFields,
+  EditorFaqFields,
+  EditorProsConsFields,
+  EditorQuizCtaFields,
 } from '#components'
 
 /**
@@ -18,9 +19,10 @@ import {
  * aperçoive.
  */
 export const sectionEditorComponents: Record<SectionType, Component> = {
-  richText: EditorRichTextFields,
-  salary: EditorSalaryFields,
-  studies: EditorStudiesFields,
-  outlets: EditorOutletsFields,
-  testimonials: EditorTestimonialsFields,
+  metierCards: EditorMetierCardsFields,
+  about: EditorAboutFields,
+  statistics: EditorStatisticsFields,
+  faq: EditorFaqFields,
+  prosCons: EditorProsConsFields,
+  quizCta: EditorQuizCtaFields,
 }

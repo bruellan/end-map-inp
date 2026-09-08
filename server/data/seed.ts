@@ -3,127 +3,128 @@ import type { Metier } from '#shared/schemas/metier'
 /**
  * Contenu de départ.
  *
+ * Repris de la maquette Figma « PE - Test » (node 1-262) : les textes
+ * sont ceux de la maquette, pas des placeholders. Ce qui manque encore
+ * y est marqué explicitement — les réponses des accordéons sont
+ * repliées dans le Figma, donc absentes.
+ *
  * Typé `satisfies Metier` : une divergence avec le schéma casse la
  * compilation plutôt que d'attendre le premier appel d'API. Recopié
  * dans le stockage à la première lecture, puis plus jamais relu.
- *
- * TODO(figma) : la copie est provisoire, à aligner sur la maquette.
  */
 
-const developpeurWeb = {
-  slug: 'developpeur-web',
+const hotellerieRestaurationTourisme = {
+  slug: 'hotellerie-restauration-tourisme',
   hero: {
-    title: 'Développeur web',
-    tagline:
-      'Il conçoit, code et fait vivre les sites et applications que tu utilises tous les jours.',
-    emoji: '💻',
-    coverUrl: '',
+    title: 'Hôtellerie,\nRestauration & Tourisme',
+    subtitle: 'Et si ton métier c’était de rendre\nles gens heureux ?',
   },
   sections: [
     {
-      id: 'sec-description',
-      type: 'richText',
-      title: 'En quoi consiste ce métier ?',
+      id: 'sec-cards',
+      type: 'metierCards',
+      title: '',
       visible: true,
-      body: "Le développeur web traduit un besoin en code. Il construit l'interface que voit l'utilisateur, la logique qui tourne derrière, et s'assure que l'ensemble reste rapide et fiable.\n\nAu quotidien, il échange beaucoup : avec les designers pour caler les écrans, avec les chefs de produit pour arbitrer ce qui part en priorité, avec les autres développeurs pendant les relectures de code.",
-    },
-    {
-      id: 'sec-etudes',
-      type: 'studies',
-      title: 'Quelles études pour y arriver ?',
-      visible: true,
-      steps: [
-        {
-          id: 'step-bac2',
-          level: 'Bac +2',
-          label: 'BTS SIO ou BUT Informatique',
-          description:
-            'La voie la plus courte vers un premier poste. Beaucoup de pratique, un stage long, et la possibilité de poursuivre en licence pro.',
-        },
-        {
-          id: 'step-bac3',
-          level: 'Bac +3',
-          label: 'Licence Informatique ou Bachelor',
-          description:
-            "Plus de théorie — algorithmique, bases de données, réseaux. Ouvre la porte au master et aux écoles d'ingénieurs en admission parallèle.",
-        },
-        {
-          id: 'step-bac5',
-          level: 'Bac +5',
-          label: "Master ou école d'ingénieurs",
-          description:
-            "Le passage attendu pour les postes d'architecte ou de lead. Souvent en alternance, ce qui compte double à l'embauche.",
-        },
+      separatorAfter: true,
+      items: [
+        { id: 'card-resto', label: 'Restauration\n& Cuisine', imageUrl: '' },
+        { id: 'card-hotel', label: 'Gestion\nHôtelière', imageUrl: '' },
+        { id: 'card-tourisme', label: 'Tourisme &\nExpérience voyageur', imageUrl: '' },
+        { id: 'card-service', label: 'Service\n& Accueil', imageUrl: '' },
       ],
     },
     {
-      id: 'sec-salaire',
-      type: 'salary',
-      title: 'Combien ça gagne ?',
+      id: 'sec-about',
+      type: 'about',
+      title: 'À propos',
       visible: true,
-      currency: 'EUR',
-      period: 'month',
-      levels: [
-        { id: 'lvl-junior', label: 'Débutant', min: 2400, max: 3000 },
-        { id: 'lvl-confirme', label: 'Confirmé', min: 3200, max: 4200 },
-        { id: 'lvl-senior', label: 'Senior', min: 4500, max: 6000 },
-      ],
+      separatorAfter: false,
+      body: 'Une filière ouverte et accessible, où le savoir-faire, l’engagement et l’expérience pèsent autant que les diplômes : on peut y entrer par un CAP...',
+      expandLabel: 'Lire la suite',
     },
     {
-      id: 'sec-debouches',
-      type: 'outlets',
-      title: 'Quels débouchés ?',
+      id: 'sec-stats',
+      type: 'statistics',
+      title: '',
       visible: true,
+      separatorAfter: true,
       items: [
         {
-          id: 'out-frontend',
-          label: 'Développeur front-end',
-          description: "Tout ce que l'utilisateur voit et manipule.",
-          icon: '🎨',
+          id: 'stat-salaire',
+          value: '2 000 €',
+          label: 'salaire médian en début de carrière',
+          icon: '💶',
         },
+        { id: 'stat-postes', value: '319 000', label: 'postes à pourvoir en 2026', icon: '📈' },
+        { id: 'stat-pros', value: '1,3 million', label: 'de professionnels en France', icon: '👥' },
+        { id: 'stat-formations', value: '797', label: 'formations référencées', icon: '🎓' },
+      ],
+    },
+    {
+      id: 'sec-faq',
+      type: 'faq',
+      title: 'Bon à savoir',
+      visible: true,
+      separatorAfter: true,
+      // Les réponses sont repliées dans la maquette : à remplir par
+      // l'équipe éditoriale depuis l'éditeur.
+      items: [
+        { id: 'faq-bac', question: 'Bac général, techno ou pro ?', answer: '', icon: '🎓' },
+        { id: 'faq-diplome', question: 'CAP, BTS ou Bachelor ?', answer: '', icon: '📜' },
         {
-          id: 'out-backend',
-          label: 'Développeur back-end',
-          description: 'Les serveurs, les données, les API.',
-          icon: '⚙️',
+          id: 'faq-recrute',
+          question: 'Le secteur recrute-t-il\nvraiment ?',
+          answer: '',
+          icon: '💼',
         },
+        { id: 'faq-ia', question: 'Et par rapport à l’IA ?', answer: '', icon: '🤖' },
         {
-          id: 'out-mobile',
-          label: 'Développeur mobile',
-          description: 'Les applications iOS et Android.',
-          icon: '📱',
-        },
-        {
-          id: 'out-lead',
-          label: 'Lead technique',
-          description: "Encadre une équipe et tranche les choix d'architecture.",
+          id: 'faq-parcoursup',
+          question: 'Quelle est la différence avec l’estimateur de Parcoursup',
+          answer: '',
           icon: '🧭',
         },
+        { id: 'faq-donnees', question: 'Et mes données dans tout ça ?', answer: '', icon: '🔒' },
       ],
     },
     {
-      id: 'sec-temoignages',
-      type: 'testimonials',
-      title: 'Ils en parlent mieux que nous',
+      id: 'sec-proscons',
+      type: 'prosCons',
+      title: 'Le métier sans filtre',
       visible: true,
-      items: [
+      separatorAfter: false,
+      tabs: [
         {
-          id: 'tem-lucie',
-          author: 'Lucie',
-          role: 'Développeuse front-end, 26 ans',
-          quote:
-            "J'ai commencé par un BTS sans savoir coder. Ce qui m'a fait rester, c'est de voir en direct ce que je construisais.",
-          avatarUrl: '',
+          id: 'tab-plus',
+          label: 'Les plus',
+          icon: '👍',
+          entries: [
+            {
+              id: 'plus-ouvert',
+              title: 'Un métier ouvert à tous',
+              body: 'Le savoir-faire, l’engagement et l’expérience comptent autant que les diplômes. On peut commencer par un CAP et évoluer vers des responsabilités.',
+            },
+            {
+              id: 'plus-evolution',
+              title: 'De vraies perspectives d’évolution',
+              body: 'Tu peux progresser rapidement, travailler partout dans le monde, rejoindre le luxe ou ouvrir ton propre établissement.',
+            },
+          ],
         },
-        {
-          id: 'tem-karim',
-          author: 'Karim',
-          role: 'Lead technique, 31 ans',
-          quote:
-            'On imagine un métier solitaire. En réalité je passe la moitié de mes journées à discuter avec les autres.',
-          avatarUrl: '',
-        },
+        // L'onglet « Les moins » existe dans la maquette mais son
+        // contenu n'y est pas visible : à saisir dans l'éditeur.
+        { id: 'tab-moins', label: 'Les moins', icon: '👎', entries: [] },
       ],
+    },
+    {
+      id: 'sec-quiz',
+      type: 'quizCta',
+      title: 'Quelle voie\nest faite pour toi ?',
+      visible: true,
+      separatorAfter: false,
+      subtitle: 'En 2 min. top chrono !',
+      ctaLabel: 'Passe le test',
+      ctaHref: '/onboarding',
     },
   ],
   updatedAt: '2026-01-01T00:00:00.000Z',
@@ -131,5 +132,5 @@ const developpeurWeb = {
 
 /** Indexé par slug pour que le repository résolve en O(1). */
 export const seedMetiers: Record<string, Metier> = {
-  [developpeurWeb.slug]: developpeurWeb,
+  [hotellerieRestaurationTourisme.slug]: hotellerieRestaurationTourisme,
 }

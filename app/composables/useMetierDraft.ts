@@ -11,7 +11,11 @@ import type { Metier, MetierUpdate, Section } from '#shared/schemas/metier'
  * par `useFetch` : tant que l'équipe n'a pas enregistré, la page métier
  * continue d'afficher la version publiée.
  */
-export function useMetierDraft(slug: MaybeRefOrGetter<string>, source: Ref<Metier | null>) {
+export function useMetierDraft(
+  slug: MaybeRefOrGetter<string>,
+  /** `useFetch` rend `undefined` avant résolution, `null` n'est jamais produit. */
+  source: Ref<Metier | undefined>,
+) {
   const { save: persist, isSaving, error } = useMetierMutation(slug)
 
   const draft = ref<Metier | null>(null)

@@ -2,15 +2,15 @@
 /**
  * Layout par défaut.
  *
- * La page métier est mobile-only : on contraint la largeur et on centre
- * sur les grands écrans plutôt que d'étirer une maquette pensée pour du
- * 390px de large.
+ * La page métier est mobile-only. La maquette fait 402 de large : on
+ * contraint à cette valeur et on centre sur grand écran plutôt que
+ * d'étirer une mise en page qui n'a pas été pensée pour.
  */
 </script>
 
 <template>
   <div class="bg-surface-light-accented min-h-dvh">
-    <div class="bg-surface-light shadow-s mx-auto min-h-dvh w-full max-w-[430px]">
+    <div class="bg-surface-light mx-auto min-h-dvh w-full max-w-[402px] overflow-hidden">
       <slot />
     </div>
   </div>

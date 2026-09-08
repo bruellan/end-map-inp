@@ -5,31 +5,22 @@ defineProps<{ hero: MetierHero }>()
 </script>
 
 <template>
-  <header class="bg-surface-soft-warm relative overflow-hidden px-5 pt-10 pb-8">
-    <!--
-      Le hero est au-dessus de la ligne de flottaison : il s'anime au
-      montage plutôt qu'au scroll. `both` dans la keyframe porte l'état
-      initial, donc pas de masquage préalable ni de flash.
-    -->
-    <p class="animate-fade-in-up text-5xl" aria-hidden="true">{{ hero.emoji }}</p>
-
-    <h1
-      class="animate-fade-in-up text-heading-lg text-primary mt-3 leading-tight font-bold tracking-tight"
-      style="animation-delay: 80ms"
-    >
+  <!--
+    Retrait supplémentaire de 24 par rapport au reste du contenu : dans
+    la maquette le titre est à 40 du bord, les autres blocs à 16.
+    Le hero est au-dessus de la ligne de flottaison, il s'anime au
+    montage plutôt qu'au scroll — `both` dans la keyframe porte l'état
+    initial, donc pas de masquage préalable ni de flash.
+  -->
+  <header class="flex flex-col gap-4 px-6">
+    <h1 class="animate-fade-in-up text-display text-primary font-semibold whitespace-pre-line">
       {{ hero.title }}
     </h1>
-
-    <p class="animate-fade-in-up text-secondary mt-2 text-base" style="animation-delay: 160ms">
-      {{ hero.tagline }}
+    <p
+      class="animate-fade-in-up text-body text-secondary font-medium whitespace-pre-line"
+      style="animation-delay: 90ms"
+    >
+      {{ hero.subtitle }}
     </p>
-
-    <img
-      v-if="hero.coverUrl"
-      :src="hero.coverUrl"
-      alt=""
-      class="animate-fade-in-up mt-6 aspect-video w-full rounded-md object-cover"
-      style="animation-delay: 240ms"
-    />
   </header>
 </template>

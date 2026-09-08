@@ -2,14 +2,14 @@
 
 Page métier mobile + éditeur de contenu, en Nuxt 4 / Vue 3 / TypeScript strict / Tailwind v4.
 
-| Route            | Rôle                          |
-| ---------------- | ----------------------------- |
-| `/`              | Liste des métiers disponibles |
-| `/metiers/:slug` | Page métier, format mobile    |
-| `/:slug/editor`  | Éditeur de contenu            |
+| Route            | Rôle                        |
+| ---------------- | --------------------------- |
+| `/`              | Liste des pages disponibles |
+| `/metiers/:slug` | Page métier, format mobile  |
+| `/:slug/editor`  | Éditeur de contenu          |
 
-Exemple : [`/metiers/developpeur-web`](http://localhost:3000/metiers/developpeur-web) et
-[`/developpeur-web/editor`](http://localhost:3000/developpeur-web/editor).
+Exemple : `/metiers/hotellerie-restauration-tourisme` et
+`/hotellerie-restauration-tourisme/editor`.
 
 ## Lancer
 
@@ -20,16 +20,18 @@ bun run dev
 
 Puis http://localhost:3000.
 
-> Node n'était pas installé sur la machine de dev, seul Bun 1.4.2. Le projet n'a
-> aucune dépendance à Bun : `npm install && npm run dev` fonctionne à l'identique.
-
 Autres commandes :
 
 ```bash
 bun run typecheck   # vue-tsc, TypeScript strict
-bun run lint        # ESLint (config @nuxt/eslint)
+bun run lint        # ESLint
 bun run build       # build de production
 ```
+
+> **`typecheck` exige Node dans le PATH.** Bun suffit pour tout le reste, mais
+> `vue-tsc` lancé sous Bun **ignore silencieusement les fichiers `.vue`** : il sort
+> en succès après n'avoir vérifié que les `.ts`. Détaillé plus bas — c'est un piège
+> coûteux. `npm install && npm run dev` fonctionne à l'identique.
 
 ## État de la livraison
 
@@ -37,25 +39,35 @@ bun run build       # build de production
 
 **Fait**
 
-- Architecture de contenu extensible, page métier rendue au SSR, éditeur complet
-  (textes, champs, ordre, visibilité), persistance, validation bout en bout.
-- Cinq sections : description, études, salaire, débouchés, témoignages.
-- Design system Edumapper repris depuis leur build de production (voir plus bas).
+- Les 6 blocs de la maquette : cartes métier, à propos, chiffres clés, questions
+  fréquentes, pour/contre, encart quiz. Textes, espacements, couleurs et
+  typographie relevés sur le Figma via l'API REST, pas estimés à l'œil.
+- Architecture de contenu extensible, page rendue au SSR, éditeur complet
+  (textes, champs, ordre, visibilité, séparateurs), persistance, validation
+  bout en bout.
 
 **Pas fait**
 
-- **La fidélité au Figma n'est pas faite.** Le fichier Figma renvoie un 403 sans
-  authentification, et le dossier Drive des animations redirige vers la page de
-  login Google. Les espacements, tailles et couleurs actuels viennent des tokens
-  d'edumapper.com, pas de la maquette : c'est cohérent avec leur design system,
-  mais ce n'est pas la maquette. C'est le premier écart à corriger, et c'est aussi
-  le premier critère d'évaluation — autant le dire franchement.
-- **Les animations ne sont pas celles du Drive.** Elles reprennent les keyframes et
-  les courbes du build Edumapper, pas les références fournies.
-- Le contenu de départ (`server/data/seed.ts`) est une copie provisoire écrite pour
-  faire tourner les cinq sections, pas le contenu de la maquette.
-- Pas de tests automatisés. Les parcours ont été vérifiés à la main (voir
-  « Ce qui a été vérifié »).
+- **La maquette n'a pas été comparée visuellement au rendu.** Les valeurs viennent
+  du JSON de l'API Figma (`absoluteBoundingBox`, `itemSpacing`, `padding*`, `fills`,
+  `style`), donc les nombres sont exacts. Mais l'endpoint de rendu d'images est
+  resté en 429 pendant toute la session : je n'ai jamais pu poser le rendu à côté
+  de la maquette. Des écarts de composition sont probables.
+- **Les images sont absentes.** La maquette contient des visuels 3D (couverts, clé,
+  carte d'embarquement, aperçus vidéo dans les cartes métier) et des icônes de
+  statistiques. Non exportés, même cause. Les emplacements sont en place et
+  alimentables par l'éditeur ; les icônes de stats sont des emoji en attendant.
+- **Les animations ne sont pas celles du Drive.** Le dossier n'a pas été fourni en
+  local. Elles reprennent les keyframes et les courbes du build de production
+  d'edumapper.com — cohérent avec leur design system, mais ce n'est pas la référence
+  demandée.
+- **Le footer n'est pas fait.** Bloc « Prends une longueur d'avance », 880px de haut
+  dans la maquette. Arbitrage assumé : le brief dit de couper du scope plutôt que de
+  la qualité, et c'est le bloc le moins structurant.
+- Deux contenus manquent parce qu'ils ne sont pas dans la maquette : les réponses
+  des accordéons (repliés dans le Figma) et l'onglet « Les moins » (vide). Les
+  champs existent et sont éditables.
+- Pas de tests automatisés. Les parcours ont été vérifiés à la main.
 
 ## Choix techniques
 
@@ -72,19 +84,32 @@ exhaustifs associent chaque variante à un composant :
 | Affichage | `app/components/metier/sectionRegistry.ts`       | `type` → composant de rendu  |
 | Édition   | `app/components/editor/sectionEditorRegistry.ts` | `type` → composant de champs |
 
-Les deux sont typés `Record<SectionType, Component>`. Ajouter une section à l'union
-sans l'enregistrer dans les deux **ne compile pas**. Une section ne peut donc pas
-devenir invisible ou non-éditable par oubli.
+Les deux sont typés `Record<SectionType, Component>`. Ajouter une variante à l'union
+sans l'enregistrer dans les deux **ne compile pas** :
+
+```
+sectionRegistry.ts(24,14): error TS2741: Property 'faq' is missing in type
+'{ metierCards: any; about: any; ... }' but required in type 'Record<"metierCards" | ...>'
+```
+
+Vérifié en cassant volontairement le registre, pas supposé. Une section ne peut donc
+pas devenir invisible ou non-éditable par oubli.
 
 Ajouter la 15e section, concrètement : un membre dans l'union, un composant
 d'affichage, un composant de champs, un libellé. Ni `pages/metiers/[slug].vue` ni
 `pages/[slug]/editor.vue` ne changent — ils itèrent sur la liste et délèguent.
 
+**Ce choix a été mis à l'épreuve en cours de route.** Le contenu a d'abord été
+modélisé sur une hypothèse fausse (une fiche métier unique : salaire, études,
+débouchés, témoignages). Le Figma montrait autre chose : une page filière avec
+cartes, accordéons et onglets. Les six variantes ont été remplacées sans toucher aux
+pages, aux composables, au repository ni aux routes d'API. C'est exactement ce que
+l'architecture devait permettre.
+
 ### Zod comme source de vérité unique
 
 Les types TypeScript sont **inférés** du schéma (`z.infer`), jamais écrits à la main.
-Le même schéma valide ce que l'éditeur envoie et ce que le stockage renvoie. Un
-contenu qui ne passe pas la validation ne peut pas atteindre le rendu.
+Le même schéma valide ce que l'éditeur envoie et ce que le stockage renvoie.
 
 La revalidation en lecture peut sembler redondante — elle ne l'est pas : le JSON sur
 disque est éditable à la main et survit aux évolutions du schéma. Mieux vaut une 500
@@ -99,24 +124,19 @@ explicite qu'un rendu cassé à mi-page.
 - `app/components/**` — reçoivent leur contenu en props. **Aucun composant
   d'affichage n'appelle l'API.**
 
-`useMetierDraft` porte toute la logique d'édition : la page `editor.vue` ne fait
-qu'orchestrer et rendre.
-
 ### Stockage : fichiers via unstorage
 
-Driver `fs` de `unstorage` (fourni par Nitro), monté sur `./.data/metiers`
-(`nuxt.config.ts`).
+Driver `fs` de `unstorage` (fourni par Nitro), monté sur `./.data/metiers`.
 
 **Pourquoi** : la donnée survit au rechargement et au redémarrage, les deux écrans la
 partagent réellement, et il n'y a aucun service à provisionner. `localStorage` aurait
 été plus rapide mais la donnée ne serait pas partagée entre appareils et le SSR ne
-pourrait pas la lire — la page métier perdrait son rendu serveur, ce qui compte pour
-un lycéen en 4G.
+pourrait pas la lire — la page perdrait son rendu serveur, ce qui compte pour un
+lycéen en 4G.
 
-**Le compromis** : passer le driver à Redis, Vercel KV ou S3 est un changement de
-configuration, pas de code — le repository ne bouge pas. En l'état ce n'est en
-revanche pas concurrent-safe (deux enregistrements simultanés, le dernier gagne) et
-ça ne marche pas sur un système de fichiers en lecture seule.
+**Le compromis** : passer à Redis, Vercel KV ou S3 est un changement de configuration,
+pas de code. En l'état ce n'est pas concurrent-safe (deux enregistrements simultanés,
+le dernier gagne) et ça ne marche pas sur un système de fichiers en lecture seule.
 
 Le contenu de départ est recopié dans le stockage à la première lecture, puis plus
 jamais : le seed ne réécrit pas par-dessus le travail de l'équipe. Pour repartir de
@@ -124,11 +144,17 @@ zéro, supprimer `.data/`.
 
 ### Design system
 
-Le Figma étant inaccessible, les tokens ont été relevés sur le **build de production
-d'edumapper.com** (Nuxt + Tailwind v4, comme ici) : `app/assets/css/theme.css` reprend
-leurs couleurs, rayons, ombres, échelle typographique et courbes d'animation sous
-leurs noms d'origine. Un composant écrit ici se recolle dans leur codebase sans
-renommage. Police : DM Sans, self-hostée par `@nuxt/fonts` — leur mécanisme exact.
+Deux sources, dans cet ordre :
+
+1. **Le Figma**, pour tout ce qui est mesurable — page 402, gouttière 16, hero en
+   retrait supplémentaire de 24, séparateurs pleine largeur (430), grille de cartes
+   à 2 colonnes, rayons 8/16/24/32, et une échelle typographique aux interlignes plus
+   serrés que ceux d'Edumapper (24/30 contre 24/32, 16/22 contre 16/24). Ces tokens
+   sont nommés séparément dans `theme.css` pour ne pas écraser les leurs.
+2. **Le build de production d'edumapper.com** pour le reste : couleurs, ombres,
+   courbes, keyframes, sous leurs noms d'origine. Un composant écrit ici se recolle
+   dans leur codebase sans renommage. Police DM Sans, self-hostée par `@nuxt/fonts` —
+   leur mécanisme exact.
 
 ### Animations : rien d'autre que Vue et CSS
 
@@ -137,7 +163,8 @@ edumapper.com n'embarque aucune librairie d'animation. Ce projet non plus.
 - `<Transition>` / `<TransitionGroup>` pour les entrées, sorties et réordonnancements.
   Le déplacement d'une section dans l'éditeur utilise l'animation **FLIP** native de
   `<TransitionGroup>` : Vue mesure les positions avant/après et anime le delta.
-- Les `@keyframes` d'Edumapper, exposées en tokens `--animate-*`.
+- Les accordéons et le repli de champs animent `grid-template-rows` de `0fr` à `1fr` :
+  la hauteur réelle du panneau n'a jamais besoin d'être mesurée en JS.
 - `RevealOnScroll` (IntersectionObserver via VueUse) pour le scroll-reveal — la seule
   chose que Vue ne fournit pas nativement. L'animation reste une keyframe CSS.
 
@@ -149,35 +176,51 @@ Deux détails qui ne se voient pas mais qui comptent :
 - `prefers-reduced-motion` est neutralisé par une seule règle globale — possible
   précisément parce que tout passe par CSS.
 
+### Le piège vue-tsc / Bun
+
+Node n'était pas dans le PATH au démarrage. Sous Bun seul, `bun run typecheck`
+**sortait en succès sans vérifier un seul fichier `.vue`** : le plugin de langage Vue
+ne s'accroche pas, `vue-tsc --listFiles` ne remontait que 5 fichiers `.ts` sur 34.
+Une erreur grossière injectée dans un composant passait inaperçue.
+
+Avec Node dans le PATH : 29 `.vue` vérifiés, et une vraie erreur trouvée
+immédiatement — `useFetch` rend `Ref<T | undefined>` là où `useMetierDraft` attendait
+`Ref<T | null>`.
+
+C'est noté ici parce qu'un vert qui ne vérifie rien est pire qu'un rouge.
+
 ## Ce qui a été vérifié
 
 À la main, via l'API et le HTML rendu :
 
-- `bun run typecheck` et `bun run lint` passent.
-- Les 5 sections sont présentes dans le HTML **rendu au serveur** (pas seulement
-  après hydratation).
+- `typecheck` (0 erreur, 29 `.vue` inclus) et `lint` passent, et restent verts après
+  `format` — Prettier et ESLint ne se contredisent pas.
+- Les sections sont dans le HTML **rendu au serveur**, pas seulement après
+  hydratation : 3 titres, 3 séparateurs, les 4 chiffres clés, aucun warning SSR.
 - Cycle complet : modification du titre, réordonnancement, masquage d'une section →
   `PUT` 200 → la page reflète les trois changements → persisté sur disque.
-- Payload invalide → 422 avec le détail des champs fautifs.
-- Slug inconnu → 404 sur l'API comme sur la page.
+- Payload invalide → 422 avec le détail des champs fautifs. Slug inconnu → 404 sur
+  l'API comme sur la page.
+- Exhaustivité des registres → erreur de compilation (test destructif, cf. plus haut).
 
 ## Avec deux jours de plus
 
 Dans cet ordre.
 
-1. **Reprendre la maquette au pixel**, une fois le Figma accessible, et caler les
-   animations sur les références du Drive. C'est le vrai reste à faire.
-2. **Tests** : Vitest sur le schéma et `useMetierDraft` (réordonnancement, détection
+1. **Poser le rendu à côté de la maquette** et corriger les écarts de composition —
+   les nombres sont bons, la mise en page n'a jamais été confrontée à l'image.
+   Exporter les visuels 3D et les icônes de statistiques.
+2. **Les animations du Drive**, une fois les références disponibles.
+3. **Tests** : Vitest sur le schéma et `useMetierDraft` (réordonnancement, détection
    de modifications), un test de composant par section, un Playwright sur le cycle
    édition → page.
-3. **Éditeur** : ajout et suppression de sections (aujourd'hui on modifie, réordonne
+4. **Le footer**, coupé du scope.
+5. **Éditeur** : ajout et suppression de sections (aujourd'hui on modifie, réordonne
    et masque, mais on ne crée pas), glisser-déposer en complément des flèches,
    annuler/rétablir, aperçu mobile côte à côte.
-4. **Robustesse** : écriture optimiste-concurrente (comparer `updatedAt` à
+6. **Robustesse** : écriture optimiste-concurrente (comparer `updatedAt` à
    l'enregistrement, refuser un écrasement), et historique des révisions —
    `unstorage` le rend simple, une clé par version.
-5. **Produit** : sommaire ancré sur les sections, partage, métier suivant en fin de
-   page, `@nuxt/image` sur les couvertures et avatars.
-6. **Contenu** : le champ `richText` est du texte brut découpé en paragraphes — pas de
-   `v-html`, donc pas de XSS ouverte par l'éditeur. Pour du gras et des liens il
-   faudra un format structuré et un rendu par nœud, pas du HTML libre.
+7. **Contenu** : les textes sont du brut, sans `v-html`, donc pas de XSS ouverte par
+   l'éditeur. Pour du gras et des liens il faudra un format structuré et un rendu par
+   nœud, pas du HTML libre.

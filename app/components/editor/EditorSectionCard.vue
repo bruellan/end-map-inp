@@ -81,9 +81,18 @@ const isOpen = ref(false)
       <div v-show="isOpen" class="grid">
         <div class="overflow-hidden">
           <div class="border-border-light space-y-4 border-t p-3">
-            <BaseField v-slot="{ id }" label="Titre de la section">
+            <BaseField
+              v-slot="{ id }"
+              label="Titre de la section"
+              hint="Vide : la section s’affiche sans titre."
+            >
               <BaseInput :id="id" v-model="section.title" />
             </BaseField>
+
+            <label class="text-secondary flex items-center gap-2 text-xs font-semibold">
+              <input v-model="section.separatorAfter" type="checkbox" class="size-4" />
+              Trait de séparation sous la section
+            </label>
 
             <component :is="sectionEditorComponents[section.type]" v-model="section" />
           </div>

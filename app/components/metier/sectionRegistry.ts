@@ -1,11 +1,12 @@
 import type { Component } from 'vue'
 import type { SectionType } from '#shared/schemas/metier'
 import {
-  MetierRichTextSection,
-  MetierSalarySection,
-  MetierStudiesSection,
-  MetierOutletsSection,
-  MetierTestimonialsSection,
+  MetierCardsSection,
+  MetierAboutSection,
+  MetierStatisticsSection,
+  MetierFaqSection,
+  MetierProsConsSection,
+  MetierQuizCtaSection,
 } from '#components'
 
 /**
@@ -21,11 +22,12 @@ import {
  * shim `*.vue` global qui écraserait le typage des props partout.
  */
 export const sectionComponents: Record<SectionType, Component> = {
-  richText: MetierRichTextSection,
-  salary: MetierSalarySection,
-  studies: MetierStudiesSection,
-  outlets: MetierOutletsSection,
-  testimonials: MetierTestimonialsSection,
+  metierCards: MetierCardsSection,
+  about: MetierAboutSection,
+  statistics: MetierStatisticsSection,
+  faq: MetierFaqSection,
+  prosCons: MetierProsConsSection,
+  quizCta: MetierQuizCtaSection,
 }
 
 /**
@@ -35,9 +37,10 @@ export const sectionComponents: Record<SectionType, Component> = {
  * nommée pour l'équipe éditoriale, pas seulement pour le code.
  */
 export const sectionTypeLabels: Record<SectionType, string> = {
-  richText: 'Texte libre',
-  salary: 'Salaire',
-  studies: 'Études',
-  outlets: 'Débouchés',
-  testimonials: 'Témoignages',
+  metierCards: 'Cartes métier',
+  about: 'À propos',
+  statistics: 'Chiffres clés',
+  faq: 'Questions fréquentes',
+  prosCons: 'Pour et contre',
+  quizCta: 'Encart quiz',
 }

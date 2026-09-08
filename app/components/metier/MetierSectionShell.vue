@@ -1,18 +1,17 @@
 <script setup lang="ts">
 /**
- * Habillage commun à toutes les sections : titre, rythme vertical,
- * ancre de navigation et révélation au scroll.
+ * Habillage commun aux sections : titre, ancre et révélation au scroll.
  *
- * Chaque composant de section s'occupe de son contenu, jamais de son
- * espacement ni de son titre. C'est ce qui garantit qu'une page de 15
- * sections garde une verticalité régulière.
+ * Le rythme vertical vient du parent (`gap` sur la liste de sections),
+ * pas d'ici : dans la maquette l'espacement dépend du voisinage, pas de
+ * la section elle-même.
  */
-defineProps<{ id: string; title: string }>()
+defineProps<{ id: string; title?: string }>()
 </script>
 
 <template>
-  <RevealOnScroll :id="id" as="section" class="scroll-mt-16 px-5 py-8">
-    <h2 class="text-primary mb-4 text-xl font-bold tracking-tight">{{ title }}</h2>
+  <RevealOnScroll :id="id" as="section" class="scroll-mt-4">
+    <h2 v-if="title" class="text-heading text-primary font-semibold">{{ title }}</h2>
     <slot />
   </RevealOnScroll>
 </template>

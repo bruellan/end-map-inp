@@ -74,23 +74,15 @@ useSeoMeta({ title: () => `Éditeur — ${draft.value?.hero.title ?? slug.value}
 
     <section class="border-border-light mb-6 space-y-4 rounded-md border p-4">
       <h2 class="text-primary text-sm font-bold">En-tête</h2>
-      <div class="grid gap-3 sm:grid-cols-[5rem_1fr]">
-        <BaseField v-slot="{ id }" label="Emoji">
-          <BaseInput :id="id" v-model="draft.hero.emoji" />
-        </BaseField>
-        <BaseField v-slot="{ id }" label="Titre">
-          <BaseInput :id="id" v-model="draft.hero.title" />
-        </BaseField>
-      </div>
-      <BaseField v-slot="{ id }" label="Accroche">
-        <BaseTextarea :id="id" v-model="draft.hero.tagline" :rows="2" />
-      </BaseField>
       <BaseField
         v-slot="{ id }"
-        label="Image de couverture"
-        hint="URL, ou vide pour ne rien afficher."
+        label="Titre"
+        hint="Les retours à la ligne sont conservés à l’affichage."
       >
-        <BaseInput :id="id" v-model="draft.hero.coverUrl" type="url" placeholder="https://…" />
+        <BaseTextarea :id="id" v-model="draft.hero.title" :rows="2" />
+      </BaseField>
+      <BaseField v-slot="{ id }" label="Sous-titre">
+        <BaseTextarea :id="id" v-model="draft.hero.subtitle" :rows="2" />
       </BaseField>
     </section>
 
