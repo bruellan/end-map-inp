@@ -180,11 +180,11 @@ Le conteneur mobile et le `body` en avaient un, et l'en-tête remontait avec la 
 sans que rien ne le signale. Les deux sont passés en `overflow: clip`, qui rogne sans
 créer ce conteneur.
 
-La remontée absorbe une partie du défilement : le contenu est translaté vers le bas
-d'une hauteur de titre pendant que le bord du panneau, lui, monte jusqu'en haut. À
-l'arrivée le panneau touche le bord de l'écran et le contenu s'arrête juste sous le
-titre — translater de la course entière figerait le contenu et ouvrirait un vide de
-cette hauteur. C'est une animation pilotée par le défilement
+La remontée se joue en deux temps. Le contenu suit d'abord le doigt au pixel, puis se
+bloque net sous le titre pendant que le bord du panneau finit sa montée. C'est obtenu
+en décalant le début de la plage d'animation, pas en étalant la translation : étalée
+sur toute la course, elle avancerait à une fraction de la vitesse du geste, et ce
+décalage permanent entre le doigt et l'écran se perçoit comme du flottement. C'est une animation pilotée par le défilement
 (`animation-timeline: scroll()`), en `transform` et non en `margin` — redimensionner
 le document à chaque image alors que la longueur de défilement dépend de cette
 hauteur ne se stabiliserait pas. Là où l'API n'existe pas, un `@supports` rend le

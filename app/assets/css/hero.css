@@ -40,6 +40,12 @@
    * « absorbée » par la remontée.
    */
   --hero-rise: calc(var(--hero-height) - var(--hero-panel-overlap));
+  /**
+   * Moment où le contenu se bloque : le défilement qu'il lui faut pour
+   * venir se ranger sous le titre. Avant ce point il défile normalement,
+   * après il ne bouge plus jusqu'à l'arrivée du panneau.
+   */
+  --hero-hold-start: calc(var(--hero-rise) - var(--hero-title-height));
 }
 
 /**
@@ -195,14 +201,23 @@
 /* ── Remontée du panneau, pilotée par le défilement ───────────────── */
 
 /**
- * Pendant la remontée, le contenu monte moins vite que le bord du
- * panneau : à l'arrivée, le panneau touche le haut de l'écran et le
- * contenu s'arrête juste sous le titre, sans laisser de blanc entre les
- * deux.
+ * Le contenu défile normalement, puis se bloque net sous le titre
+ * pendant que le bord du panneau finit sa montée.
  *
- * La translation vers le bas atteint donc une hauteur de titre, et non
- * la course entière — celle-ci figerait le contenu et ouvrirait un vide
- * de la hauteur de la course.
+ * Deux temps, obtenus en décalant le début de la plage plutôt qu'en
+ * étalant la translation sur toute la course :
+ *
+ *   0 → hold-start   aucune translation, le contenu suit le doigt
+ *   hold-start → rise  la translation compense le défilement au pixel,
+ *                      le contenu ne bouge plus
+ *
+ * Étaler la translation sur la course entière la ferait avancer à une
+ * fraction de la vitesse du doigt — un décalage permanent entre le geste
+ * et l'écran, qu'on perçoit comme du flottement.
+ *
+ * La translation vaut une hauteur de titre, jamais la course entière :
+ * celle-ci figerait le contenu dès le premier pixel et ouvrirait un vide
+ * de sa hauteur.
  *
  * `transform` et non `margin` : animer une marge redimensionnerait le
  * document à chaque image, et la longueur de défilement dépend
@@ -213,9 +228,9 @@
  */
 @supports (animation-timeline: scroll()) {
   .hero-panel-content {
-    animation: heroContentSettle linear both;
+    animation: heroContentHold linear both;
     animation-timeline: scroll(root block);
-    animation-range: 0 var(--hero-rise);
+    animation-range: var(--hero-hold-start) var(--hero-rise);
   }
 
   .hero-panel {
@@ -223,7 +238,7 @@
   }
 }
 
-@keyframes heroContentSettle {
+@keyframes heroContentHold {
   from {
     transform: translateY(0);
   }
