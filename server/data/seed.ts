@@ -159,7 +159,23 @@ const hotellerieRestaurationTourisme = {
         },
         // L'onglet « Les moins » existe dans la maquette mais son
         // contenu n'y est pas visible : à saisir dans l'éditeur.
-        { id: 'tab-moins', label: 'Les moins', icon: 'skull-and-crossbones', entries: [] },
+        {
+          id: 'tab-moins',
+          label: 'Les moins',
+          icon: 'skull-and-crossbones',
+          entries: [
+            {
+              id: 'plus-ouvert',
+              title: 'Un métier ouvert à tous',
+              body: 'Le savoir-faire, l’engagement et l’expérience comptent autant que les diplômes. On peut commencer par un CAP et évoluer vers des responsabilités.',
+            },
+            {
+              id: 'plus-evolution',
+              title: 'De vraies perspectives d’évolution',
+              body: 'Tu peux progresser rapidement, travailler partout dans le monde, rejoindre le luxe ou ouvrir ton propre établissement.',
+            },
+          ],
+        },
       ],
     },
     {

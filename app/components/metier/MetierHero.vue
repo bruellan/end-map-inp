@@ -44,7 +44,7 @@ const COLLAGE_START = 250
   </div>
 
   <!-- Titre : au-dessus du panneau, il reste lisible en haut. -->
-  <header class="hero-title brand-gradient flex flex-col items-center gap-2 px-6 pt-24 text-center">
+  <header class="hero-title relative flex flex-col items-center gap-2 px-6 pt-24 text-center">
     <p v-if="hero.eyebrow" class="text-label text-tertiary font-medium">{{ hero.eyebrow }}</p>
     <h1 class="text-display text-primary font-semibold whitespace-pre-line">
       {{ hero.title }}

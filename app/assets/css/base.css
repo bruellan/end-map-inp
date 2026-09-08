@@ -88,24 +88,29 @@
  * radiaux — orange à gauche, rose à droite, bleu en bas — sur le beige.
  * Partagé par l'en-tête et le bloc de fin de page.
  */
+:root {
+  /* Nommé pour qu'un pseudo-élément puisse le reprendre à l'identique. */
+  --brand-gradient:
+    radial-gradient(
+      77.21% 35.76% at -19.77% 40.24%,
+      rgb(255 107 54 / 0.31) 0%,
+      rgb(255 107 54 / 0) 100%
+    ),
+    radial-gradient(
+      75.52% 34.71% at 113.26% 69.37%,
+      rgb(245 119 213 / 0.5) 0%,
+      rgb(245 119 213 / 0) 100%
+    ),
+    radial-gradient(
+      65.81% 30.48% at 0% 97.69%,
+      rgb(143 191 255 / 0.6) 0%,
+      rgb(143 191 255 / 0) 100%
+    ),
+    linear-gradient(var(--color-surface-soft-warm), var(--color-surface-soft-warm));
+}
+
 @layer components {
   .brand-gradient {
-    background:
-      radial-gradient(
-        77.21% 35.76% at -19.77% 40.24%,
-        rgb(255 107 54 / 0.31) 0%,
-        rgb(255 107 54 / 0) 100%
-      ),
-      radial-gradient(
-        75.52% 34.71% at 113.26% 69.37%,
-        rgb(245 119 213 / 0.5) 0%,
-        rgb(245 119 213 / 0) 100%
-      ),
-      radial-gradient(
-        65.81% 30.48% at 0% 97.69%,
-        rgb(143 191 255 / 0.6) 0%,
-        rgb(143 191 255 / 0) 100%
-      ),
-      var(--color-surface-soft-warm);
+    background: var(--brand-gradient);
   }
 }

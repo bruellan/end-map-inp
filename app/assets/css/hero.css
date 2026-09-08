@@ -72,9 +72,31 @@
   z-index: 20;
   height: var(--hero-title-height);
   margin-top: calc(-1 * var(--hero-height));
+  animation: heroTitleLift 0.9s var(--ease-drawer) 1.9s both;
+}
+
+/**
+ * Fond du bloc de titre, porté par un pseudo-élément pour pouvoir
+ * apparaître seul.
+ *
+ * Il reste invisible tant que le collage est derrière : un fond opaque
+ * trancherait les illustrations à hauteur du titre et masquerait le bord
+ * arrondi du panneau qui remonte. Il ne se révèle qu'une fois le panneau
+ * arrivé en haut, quand le titre a besoin d'un fond pour rester lisible
+ * par-dessus le contenu blanc.
+ *
+ * `background-size` est calé sur la hauteur de l'en-tête, comme celui du
+ * fond : les deux étant ancrés en haut, ils se superposent exactement.
+ */
+.hero-title::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--brand-gradient);
   background-size: 100% var(--hero-height);
   background-position: top center;
-  animation: heroTitleLift 0.9s var(--ease-drawer) 1.9s both;
+  opacity: 0;
 }
 
 /**
@@ -111,12 +133,10 @@
 @keyframes heroTitleLift {
   from {
     margin-top: calc(-1 * var(--hero-height-intro));
-    background-size: 100% var(--hero-height-intro);
     opacity: 0;
   }
   to {
     margin-top: calc(-1 * var(--hero-height));
-    background-size: 100% var(--hero-height);
     opacity: 1;
   }
 }
@@ -160,6 +180,22 @@
 
   .hero-panel {
     padding-bottom: var(--hero-rise);
+  }
+
+  /* Le fond du titre se révèle au rythme de la remontée. */
+  .hero-title::before {
+    animation: heroTitleBackdrop linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 var(--hero-rise);
+  }
+}
+
+@keyframes heroTitleBackdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

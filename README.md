@@ -166,9 +166,13 @@ recouvrir le collage en remontant tout en passant sous le titre, qui reste lisib
 haut. Leurs hauteurs vivent ensemble dans `app/assets/css/hero.css` : trois éléments
 répartis dans deux composants doivent s'accorder au pixel.
 
-Les deux calques qui portent le dégradé calent leur `background-size` sur la hauteur
-de l'en-tête plutôt que sur la leur. Sans ça chaque radial se dimensionne sur sa
-propre boîte et la jointure se voit.
+Le bloc de titre n'a pas de fond à lui : un fond opaque trancherait le collage net à
+sa hauteur et recouvrirait le bord arrondi du panneau qui remonte. Il en gagne un,
+porté par un pseudo-élément, seulement une fois le panneau arrivé en haut — quand le
+titre passe au-dessus du contenu blanc et a besoin d'un fond pour rester lisible. Ce
+fond cale son `background-size` sur la hauteur de l'en-tête, comme le calque du fond :
+les deux étant ancrés en haut, ils se superposent exactement et la jointure ne se voit
+pas.
 
 Un piège à connaître avant de toucher au layout : `position: sticky` est neutralisé
 par le moindre ancêtre en `overflow: hidden`, qui en fait un conteneur de défilement.
