@@ -22,7 +22,7 @@ const activeTab = computed(() => props.section.tabs.find((tab) => tab.id === act
 <template>
   <MetierSectionShell :id="section.id" :title="section.title">
     <div class="mt-6 flex flex-col gap-4">
-      <div role="tablist" class="flex gap-0">
+      <div role="tablist" class="flex">
         <button
           v-for="tab in section.tabs"
           :key="tab.id"
@@ -34,7 +34,7 @@ const activeTab = computed(() => props.section.tabs.find((tab) => tab.id === act
           :class="activeId === tab.id ? 'bg-surface-card' : 'bg-transparent'"
           @click="activeId = tab.id"
         >
-          <span class="text-2xl leading-none" aria-hidden="true">{{ tab.icon }}</span>
+          <BaseEmoji :name="tab.icon" />
           {{ tab.label }}
         </button>
       </div>
@@ -45,16 +45,18 @@ const activeTab = computed(() => props.section.tabs.find((tab) => tab.id === act
         la hauteur du bloc sursaute.
       -->
       <Transition name="slide-up" mode="out-in">
-        <div
-          :id="`tab-panel-${activeId}`"
-          :key="activeId"
-          role="tabpanel"
-          class="flex flex-col gap-2"
-        >
+        <div :id="`tab-panel-${activeId}`" :key="activeId" role="tabpanel">
+          <!--
+            Chevauchement de 8px entre les cartes (`itemSpacing: -8` dans
+            la maquette). `-mt-2` sur toutes sauf la première, et un
+            empilement inverse pour que la carte du dessus reste au-dessus.
+          -->
           <article
-            v-for="entry in activeTab?.entries ?? []"
+            v-for="(entry, index) in activeTab?.entries ?? []"
             :key="entry.id"
-            class="bg-surface-light flex flex-col gap-2 rounded-lg p-6 shadow-xs"
+            class="bg-surface-light shadow-s relative flex flex-col gap-2 rounded-lg p-6"
+            :class="index > 0 && '-mt-2'"
+            :style="{ zIndex: (activeTab?.entries.length ?? 0) - index }"
           >
             <h3 class="text-subheading text-primary font-semibold">{{ entry.title }}</h3>
             <p class="text-body text-tertiary font-medium">{{ entry.body }}</p>

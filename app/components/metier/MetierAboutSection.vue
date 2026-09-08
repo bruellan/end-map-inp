@@ -19,7 +19,24 @@ const isExpanded = ref(false)
       </p>
 
       <BasePill v-if="isExpandable" @click="isExpanded = !isExpanded">
-        <span aria-hidden="true">{{ isExpanded ? '⌃' : '⌄' }}</span>
+        <!-- La maquette place ici un pictogramme 16px que je n'ai pas pu
+             identifier depuis l'export ; un chevron porte l'affordance
+             sans inventer une icône. -->
+        <svg
+          viewBox="0 0 16 16"
+          class="size-4 transition-transform duration-200 ease-out"
+          :class="isExpanded && 'rotate-180'"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M4 6l4 4 4-4"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
         {{ isExpanded ? 'Réduire' : section.expandLabel }}
       </BasePill>
     </div>

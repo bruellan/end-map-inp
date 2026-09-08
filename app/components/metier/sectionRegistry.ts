@@ -7,6 +7,7 @@ import {
   MetierFaqSection,
   MetierProsConsSection,
   MetierQuizCtaSection,
+  MetierTipsSection,
 } from '#components'
 
 /**
@@ -28,6 +29,7 @@ export const sectionComponents: Record<SectionType, Component> = {
   faq: MetierFaqSection,
   prosCons: MetierProsConsSection,
   quizCta: MetierQuizCtaSection,
+  tips: MetierTipsSection,
 }
 
 /**
@@ -43,4 +45,5 @@ export const sectionTypeLabels: Record<SectionType, string> = {
   faq: 'Questions fréquentes',
   prosCons: 'Pour et contre',
   quizCta: 'Encart quiz',
+  tips: 'Conseils',
 }

@@ -67,7 +67,10 @@ const metierCardsSectionSchema = sectionBaseSchema.extend({
     z.object({
       id: z.string().min(1),
       label: z.string(),
-      imageUrl: imageRefSchema,
+      /** Photo cadrée dans la vignette blanche inclinée. */
+      photoUrl: imageRefSchema,
+      /** Objet 3D détouré, débordant à droite de la vignette. */
+      stickerUrl: imageRefSchema,
     }),
   ),
 })
@@ -102,7 +105,6 @@ const faqSectionSchema = sectionBaseSchema.extend({
       id: z.string().min(1),
       question: z.string(),
       answer: z.string(),
-      icon: z.string(),
     }),
   ),
 })
@@ -141,6 +143,18 @@ const quizCtaSectionSchema = sectionBaseSchema.extend({
   decorations: z.array(imageRefSchema).max(4),
 })
 
+/** Carrousel de conseils en fin de page (bloc « Prends une longueur d'avance »). */
+const tipsSectionSchema = sectionBaseSchema.extend({
+  type: z.literal('tips'),
+  items: z.array(
+    z.object({
+      id: z.string().min(1),
+      icon: z.string(),
+      body: z.string(),
+    }),
+  ),
+})
+
 /* ── Union & page ─────────────────────────────────────────────────── */
 
 export const sectionSchema = z.discriminatedUnion('type', [
@@ -150,6 +164,7 @@ export const sectionSchema = z.discriminatedUnion('type', [
   faqSectionSchema,
   prosConsSectionSchema,
   quizCtaSectionSchema,
+  tipsSectionSchema,
 ])
 
 /** En-tête de la page, hors liste de sections car toujours présent. */

@@ -39,33 +39,30 @@ bun run build       # build de production
 
 **Fait**
 
-- Les 6 blocs de la maquette : cartes métier, à propos, chiffres clés, questions
-  fréquentes, pour/contre, encart quiz. Textes, espacements, couleurs et
-  typographie relevés sur le Figma via l'API REST, pas estimés à l'œil.
+- Les 7 blocs de la maquette : barre de navigation, cartes métier, à propos,
+  chiffres clés, questions fréquentes, pour/contre, encart quiz, carrousel de
+  conseils. Textes, espacements, couleurs et typographie relevés sur le Figma via
+  l'API REST, pas estimés à l'œil.
 - Architecture de contenu extensible, page rendue au SSR, éditeur complet
   (textes, champs, ordre, visibilité, séparateurs), persistance, validation
   bout en bout.
+- Rendu comparé à la maquette par capture headless, section par section.
 
 **Pas fait**
 
-- **La maquette n'a pas été comparée visuellement au rendu.** Les valeurs viennent
-  du JSON de l'API Figma (`absoluteBoundingBox`, `itemSpacing`, `padding*`, `fills`,
-  `style`), donc les nombres sont exacts. Mais l'endpoint de rendu d'images est
-  resté en 429 pendant toute la session : je n'ai jamais pu poser le rendu à côté
-  de la maquette. Des écarts de composition sont probables.
-- **Les images sont partiellement en place.** Les visuels 3D des cartes métier et de
-  l'encart quiz sont exportés du Figma et intégrés (`public/images/`). En revanche les
-  icônes des chiffres clés sont des emoji faute d'export, et la composition des cartes
-  est simplifiée : la maquette superpose jusqu'à trois éléments par carte (aperçu
-  vidéo + un ou deux objets, chacun avec sa rotation), le composant en rend deux.
-  Ce choix est aussi un choix de modèle — voir plus bas.
+- **Quatre détails ne correspondent pas encore.** Les photos des cartes « Gestion
+  Hôtelière » et « Service & Accueil » sont des suppositions : l'export Figma livre
+  31 visuels sans indiquer lequel va où, et le cadre photo est vide dans le fichier
+  que l'API renvoie. Le pictogramme de l'onglet « Les plus » et celui du bouton
+  « Lire la suite » n'ont pas pu être identifiés non plus. Enfin le bandeau
+  illustré en bas de page (collage dégradé) n'est pas repris.
+- **La composition des cartes est simplifiée.** La maquette superpose jusqu'à trois
+  éléments par carte (vignette photo + un ou deux objets, chacun avec sa rotation) ;
+  le composant en rend deux, une photo et un objet.
 - **Les animations ne sont pas celles du Drive.** Le dossier n'a pas été fourni en
   local. Elles reprennent les keyframes et les courbes du build de production
   d'edumapper.com — cohérent avec leur design system, mais ce n'est pas la référence
   demandée.
-- **Le footer n'est pas fait.** Bloc « Prends une longueur d'avance », 880px de haut
-  dans la maquette. Arbitrage assumé : le brief dit de couper du scope plutôt que de
-  la qualité, et c'est le bloc le moins structurant.
 - Deux contenus manquent parce qu'ils ne sont pas dans la maquette : les réponses
   des accordéons (repliés dans le Figma) et l'onglet « Les moins » (vide). Les
   champs existent et sont éditables.
@@ -162,6 +159,26 @@ aperçus vidéo dans les cartes métier, déduite du rang et non stockée.
 La limite est assumée : une cinquième image décorative n'aurait pas de place définie,
 d'où le `.max(4)` dans le schéma plutôt qu'un silence à l'affichage.
 
+### Emoji : Fluent 3D, servis sans copie
+
+La maquette utilise les Fluent Emoji **3D** de Microsoft. Ils n'existent qu'en
+bitmap — les jeux SVG d'Iconify (`fluent-emoji`, `-flat`, `-high-contrast`) sont des
+variantes plates, visiblement différentes.
+
+Le paquet `@lobehub/fluent-emoji` aurait tiré React 19, react-dom, lucide-react et
+antd-style dans un projet Vue : c'est une bibliothèque de composants React. On
+utilise `@lobehub/assets-emoji`, le paquet d'assets qu'elle enveloppe — 1605 WebP,
+**zéro dépendance**.
+
+Il n'est pas recopié dans `public/` : Nitro le monte directement depuis
+`node_modules` (`nitro.publicAssets`). Rien à versionner, rien à resynchroniser, et
+seul ce dossier part dans le build. Le chemin est obtenu par résolution du paquet,
+pas en dur — un chemin relatif serait résolu depuis `srcDir` (`app/`), et un chemin
+figé casserait avec le hoisting de pnpm.
+
+Le contenu stocke le nom CLDR (`money-bag`), et l'éditeur affiche l'aperçu à côté du
+champ : un nom inconnu se voit immédiatement, sans ouvrir la page.
+
 ### Design system
 
 Deux sources, dans cet ordre :
@@ -230,20 +247,18 @@ C'est noté ici parce qu'un vert qui ne vérifie rien est pire qu'un rouge.
 
 Dans cet ordre.
 
-1. **Poser le rendu à côté de la maquette** et corriger les écarts de composition —
-   les nombres sont bons, la mise en page n'a jamais été confrontée à l'image.
-   Exporter les icônes de statistiques et compléter la composition des cartes.
+1. **Confirmer les quatre détails non identifiés** (deux photos de cartes, deux
+   pictogrammes) et reprendre le bandeau illustré de fin de page.
 2. **Les animations du Drive**, une fois les références disponibles.
 3. **Tests** : Vitest sur le schéma et `useMetierDraft` (réordonnancement, détection
    de modifications), un test de composant par section, un Playwright sur le cycle
    édition → page.
-4. **Le footer**, coupé du scope.
-5. **Éditeur** : ajout et suppression de sections (aujourd'hui on modifie, réordonne
+4. **Éditeur** : ajout et suppression de sections (aujourd'hui on modifie, réordonne
    et masque, mais on ne crée pas), glisser-déposer en complément des flèches,
    annuler/rétablir, aperçu mobile côte à côte.
-6. **Robustesse** : écriture optimiste-concurrente (comparer `updatedAt` à
+5. **Robustesse** : écriture optimiste-concurrente (comparer `updatedAt` à
    l'enregistrement, refuser un écrasement), et historique des révisions —
    `unstorage` le rend simple, une clé par version.
-7. **Contenu** : les textes sont du brut, sans `v-html`, donc pas de XSS ouverte par
+6. **Contenu** : les textes sont du brut, sans `v-html`, donc pas de XSS ouverte par
    l'éditeur. Pour du gras et des liens il faudra un format structuré et un rendu par
    nœud, pas du HTML libre.

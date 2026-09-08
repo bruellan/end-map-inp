@@ -5,7 +5,7 @@ defineProps<{ section: SectionOfType<'faq'> }>()
 
 /**
  * Accordéon exclusif : ouvrir une question referme la précédente.
- * `null` = tout replié, l'état de départ dans la maquette.
+ * `null` = tout replié, l'état de départ du rendu de référence.
  */
 const openId = ref<string | null>(null)
 
@@ -21,21 +21,31 @@ const toggle = (id: string) => {
         <h3>
           <button
             type="button"
-            class="flex w-full items-start gap-2 p-6 text-left"
+            class="flex w-full items-center gap-3 p-6 text-left"
             :aria-expanded="openId === item.id"
             :aria-controls="`faq-panel-${item.id}`"
             @click="toggle(item.id)"
           >
-            <span class="shrink-0 text-2xl leading-[25px]" aria-hidden="true">{{ item.icon }}</span>
             <span class="text-subheading text-primary flex-1 font-semibold whitespace-pre-line">
               {{ item.question }}
             </span>
+
+            <!--
+              Le « + » devient « × » par rotation, sans changer de glyphe :
+              une seule transformation CSS, et pas de saut de rendu entre
+              deux caractères de largeurs différentes.
+            -->
             <span
-              class="text-icon-subtle-default ease-drawer shrink-0 transition-transform duration-300"
-              :class="openId === item.id && 'rotate-180'"
+              class="ease-drawer relative size-5 shrink-0 transition-transform duration-300"
+              :class="openId === item.id && 'rotate-45'"
               aria-hidden="true"
             >
-              ⌄
+              <span
+                class="bg-icon-subtle-default absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 rounded-full"
+              />
+              <span
+                class="bg-icon-subtle-default absolute top-0 left-1/2 h-full w-0.5 -translate-x-1/2 rounded-full"
+              />
             </span>
           </button>
         </h3>

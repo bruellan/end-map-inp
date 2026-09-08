@@ -7,6 +7,7 @@ import {
   EditorFaqFields,
   EditorProsConsFields,
   EditorQuizCtaFields,
+  EditorTipsFields,
 } from '#components'
 
 /**
@@ -25,4 +26,5 @@ export const sectionEditorComponents: Record<SectionType, Component> = {
   faq: EditorFaqFields,
   prosCons: EditorProsConsFields,
   quizCta: EditorQuizCtaFields,
+  tips: EditorTipsFields,
 }

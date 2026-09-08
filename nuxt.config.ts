@@ -1,4 +1,16 @@
+import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
+
+/**
+ * Résolution du paquet plutôt qu'un chemin en dur vers node_modules :
+ * un chemin relatif serait résolu depuis `srcDir` (`app/`), et un chemin
+ * codé en dur casserait avec le hoisting de pnpm ou Yarn PnP.
+ */
+const emojiAssetsDir = join(
+  dirname(createRequire(import.meta.url).resolve('@lobehub/assets-emoji/package.json')),
+  'assets',
+)
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -38,6 +50,25 @@ export default defineNuxtConfig({
     storage: {
       metiers: { driver: 'fs', base: './.data/metiers' },
     },
+
+    /**
+     * Fluent Emoji 3D (Microsoft), servis depuis le paquet d'assets.
+     *
+     * `@lobehub/assets-emoji` est un paquet d'images pur — 1605 WebP,
+     * zéro dépendance. On le monte tel quel au lieu de recopier les
+     * fichiers : rien à versionner, rien à resynchroniser, et le build
+     * n'embarque que ce dossier.
+     *
+     * Le paquet React `@lobehub/fluent-emoji` aurait tiré React 19,
+     * react-dom, lucide-react et antd-style dans un projet Vue.
+     */
+    publicAssets: [
+      {
+        dir: emojiAssetsDir,
+        baseURL: '/emoji',
+        maxAge: 60 * 60 * 24 * 365,
+      },
+    ],
   },
 
   // Tailwind v4 s'installe en plugin Vite, sans postcss.config.

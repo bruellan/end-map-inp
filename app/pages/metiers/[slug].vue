@@ -32,7 +32,9 @@ useSeoMeta({
 </script>
 
 <template>
-  <article v-if="metier" class="pt-8 pb-18">
+  <article v-if="metier" class="pb-18">
+    <MetierTopBar />
+
     <MetierHero :hero="metier.hero" />
 
     <!--

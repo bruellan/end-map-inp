@@ -4,11 +4,11 @@ import type { SectionOfType } from '#shared/schemas/metier'
 defineProps<{ section: SectionOfType<'metierCards'> }>()
 
 /**
- * Dans la maquette, l'aperçu vidéo de chaque carte est incliné
+ * Dans la maquette, la vignette de chaque carte est inclinée
  * alternativement à -4° et +4°. La règle est visuelle, pas éditoriale :
  * elle se déduit du rang, elle n'a rien à faire dans le contenu.
  */
-const previewTilt = (index: number) => (index % 2 === 0 ? -4 : 4)
+const photoTilt = (index: number) => (index % 2 === 0 ? -4 : 4)
 </script>
 
 <template>
@@ -20,28 +20,44 @@ const previewTilt = (index: number) => (index % 2 === 0 ? -4 : 4)
         <div
           class="bg-surface-card relative h-[191px] overflow-hidden rounded-2xl transition-transform duration-200 ease-out active:scale-[0.98]"
         >
-          <!-- Aperçu vidéo : 101x134 à (38, 28) dans un conteneur de
-               177x191, exprimé en pourcentages pour rester proportionnel
-               si la carte change de largeur. -->
+          <!-- Vignette : 101x134 à (38, 28) dans un conteneur de 177x191,
+               exprimée en pourcentages pour rester proportionnelle. -->
           <div
-            class="bg-surface-light absolute top-[15%] left-[21%] h-[70%] w-[57%] rounded-sm shadow-xs"
-            :style="{ transform: `rotate(${previewTilt(index)}deg)` }"
-            aria-hidden="true"
-          />
+            class="bg-surface-light absolute top-[15%] left-[21%] h-[70%] w-[57%] overflow-hidden rounded-sm p-1.5 shadow-xs"
+            :style="{ transform: `rotate(${photoTilt(index)}deg)` }"
+          >
+            <img
+              v-if="item.photoUrl"
+              :src="item.photoUrl"
+              alt=""
+              class="size-full rounded-xs object-cover"
+              loading="lazy"
+            />
+          </div>
 
-          <!-- Objet 3D, débordant à droite comme dans la maquette. -->
+          <!--
+            Objet 3D détouré, débordant à droite comme dans la maquette.
+            Boîte de proportions fixes plutôt qu'une hauteur seule : les
+            PNG exportés ont des ratios très différents (110x600 pour la
+            fourchette, 337x600 pour la clé), et `object-contain` les fait
+            tenir dans la même boîte sans qu'une carte ne se retrouve avec
+            un objet deux fois plus grand qu'une autre.
+          -->
           <img
-            v-if="item.imageUrl"
-            :src="item.imageUrl"
+            v-if="item.stickerUrl"
+            :src="item.stickerUrl"
             alt=""
-            class="absolute top-1/2 right-0 h-[62%] w-auto translate-x-[18%] -translate-y-1/2 rotate-[16deg] object-contain drop-shadow-md"
+            aria-hidden="true"
+            class="absolute top-1/2 right-0 h-[52%] w-[38%] translate-x-[14%] -translate-y-1/2 rotate-[16deg] object-contain drop-shadow-md"
             loading="lazy"
           />
         </div>
 
         <!-- `whitespace-pre-line` : les retours à la ligne du contenu
              sont voulus (la maquette casse « Restauration / & Cuisine »). -->
-        <p class="text-body text-primary font-semibold whitespace-pre-line">{{ item.label }}</p>
+        <p class="text-body text-primary text-center font-semibold whitespace-pre-line">
+          {{ item.label }}
+        </p>
       </li>
     </ul>
   </MetierSectionShell>

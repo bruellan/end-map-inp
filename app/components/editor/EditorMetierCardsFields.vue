@@ -3,7 +3,7 @@ import type { SectionOfType } from '#shared/schemas/metier'
 
 const section = defineModel<SectionOfType<'metierCards'>>({ required: true })
 
-const createCard = () => ({ id: createId('card'), label: '', imageUrl: '' })
+const createCard = () => ({ id: createId('card'), label: '', photoUrl: '', stickerUrl: '' })
 </script>
 
 <template>
@@ -21,8 +21,13 @@ const createCard = () => ({ id: createId('card'), label: '', imageUrl: '' })
         placeholder="Restauration&#10;& Cuisine"
       />
     </BaseField>
-    <BaseField v-slot="{ id }" label="Image">
-      <BaseInput :id="id" v-model="item.imageUrl" type="url" placeholder="https://…" />
-    </BaseField>
+    <div class="grid grid-cols-2 gap-3">
+      <BaseField v-slot="{ id }" label="Photo" hint="Cadrée dans la vignette blanche.">
+        <BaseInput :id="id" v-model="item.photoUrl" placeholder="/images/…" />
+      </BaseField>
+      <BaseField v-slot="{ id }" label="Objet 3D" hint="Détouré, débordant à droite.">
+        <BaseInput :id="id" v-model="item.stickerUrl" placeholder="/images/…" />
+      </BaseField>
+    </div>
   </EditorRepeater>
 </template>
