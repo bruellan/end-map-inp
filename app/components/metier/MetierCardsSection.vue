@@ -13,9 +13,14 @@ const photoTilt = (index: number) => (index % 2 === 0 ? -4 : 4)
 
 <template>
   <MetierSectionShell :id="section.id" :title="section.title">
-    <!-- Grille 2 colonnes, gouttière 16 : quatre cartes de 177 dans les
-         370 de contenu (maquette). -->
-    <ul class="grid grid-cols-2 gap-4">
+    <!--
+      Grille 2 colonnes : quatre cartes de 177 dans les 370 de contenu.
+      Les deux espacements diffèrent — 16 horizontal, 40 vertical. En
+      auto-layout avec retour à la ligne, Figma les distingue
+      (`itemSpacing` et `counterAxisSpacing`), et les confondre resserre
+      les rangées.
+    -->
+    <ul class="grid grid-cols-2 gap-x-4 gap-y-10">
       <li v-for="(item, index) in section.items" :key="item.id" class="flex flex-col gap-3">
         <div
           class="bg-surface-card relative h-[191px] overflow-hidden rounded-2xl transition-transform duration-200 ease-out active:scale-[0.98]"

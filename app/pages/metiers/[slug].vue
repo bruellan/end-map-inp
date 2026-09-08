@@ -79,14 +79,15 @@ useSeoMeta({
     <MetierHero :hero="metier.hero" :docked="panelDocked" />
 
     <div class="hero-panel bg-surface-light rounded-t-xl">
-      <div class="hero-panel-content">
-        <!--
-        Sentinelle en tête du panneau : elle dit quand celui-ci atteint le
-        haut de l'écran. Attachée au panneau plutôt qu'à une position
-        calculée, pour ne pas dupliquer la hauteur de l'en-tête.
+      <!--
+        Sentinelle sur le bord du panneau, et surtout hors du contenu
+        translaté : à l'intérieur, elle suivrait la translation qui
+        annule le défilement et resterait immobile pendant toute la
+        remontée, sans jamais signaler l'arrivée en haut.
       -->
-        <div ref="panelTop" class="h-px" aria-hidden="true" />
+      <div ref="panelTop" class="h-px" aria-hidden="true" />
 
+      <div class="hero-panel-content">
         <!--
         TransitionGroup, et pas un simple v-for : quand l'éditeur
         réordonne ou masque une section, les voisines glissent à leur

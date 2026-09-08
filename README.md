@@ -247,6 +247,12 @@ champ : un nom inconnu se voit immédiatement, sans ouvrir la page.
 
 Deux sources, dans cet ordre :
 
+Un relevé à refaire si vous reprenez le fichier : en auto-layout avec retour à la
+ligne, Figma expose **deux** espacements — `itemSpacing` pour l'axe principal et
+`counterAxisSpacing` pour l'autre. Ma première extraction n'a lu que le premier, et
+les deux grilles se sont retrouvées avec 16px verticalement au lieu de 40 (cartes
+métier) et 32 (chiffres clés).
+
 1. **Le Figma**, pour tout ce qui est mesurable — page 402, gouttière 16, hero en
    retrait supplémentaire de 24, séparateurs pleine largeur (430), grille de cartes
    à 2 colonnes, rayons 8/16/24/32, et une échelle typographique aux interlignes plus

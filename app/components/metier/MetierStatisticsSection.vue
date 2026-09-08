@@ -6,7 +6,8 @@ defineProps<{ section: SectionOfType<'statistics'> }>()
 
 <template>
   <MetierSectionShell :id="section.id" :title="section.title">
-    <ul class="grid grid-cols-2 gap-4">
+    <!-- 16 horizontal, 32 vertical : voir la remarque des cartes métier. -->
+    <ul class="grid grid-cols-2 gap-x-4 gap-y-8">
       <li v-for="item in section.items" :key="item.id" class="flex flex-col gap-3">
         <BaseEmoji :name="item.icon" />
         <div>
