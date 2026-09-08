@@ -132,6 +132,9 @@
   /* ── Ombres ───────────────────────────────────────────────────── */
   --shadow-xs: 0px 4px 8px 0px #27273414;
   --shadow-s: 0px 6px 16px 0px #2727341f;
+  /* Même portée que `s` mais plus douce (0.08 au lieu de 0.12) : ombre
+     des cartes empilées « Le métier sans filtre » (spec Figma). */
+  --shadow-card: 0px 6px 16px 0px #27273414;
 
   /* ── Courbes d'animation ──────────────────────────────────────── */
   --ease-in: cubic-bezier(0.4, 0, 1, 1);

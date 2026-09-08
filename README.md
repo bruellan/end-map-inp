@@ -170,6 +170,12 @@ Les deux calques qui portent le dégradé calent leur `background-size` sur la h
 de l'en-tête plutôt que sur la leur. Sans ça chaque radial se dimensionne sur sa
 propre boîte et la jointure se voit.
 
+Un piège à connaître avant de toucher au layout : `position: sticky` est neutralisé
+par le moindre ancêtre en `overflow: hidden`, qui en fait un conteneur de défilement.
+Le conteneur mobile et le `body` en avaient un, et l'en-tête remontait avec la page
+sans que rien ne le signale. Les deux sont passés en `overflow: clip`, qui rogne sans
+créer ce conteneur.
+
 La remontée elle-même absorbe le défilement : pendant sa course, le contenu est
 translaté vers le bas d'exactement ce qu'on défile, donc il ne bouge pas à l'écran,
 tandis que le bord du panneau monte. C'est une animation pilotée par le défilement

@@ -75,7 +75,7 @@ const tilt = (index: number) => TILTS[index % TILTS.length]
           :style="{ zIndex: index }"
         >
           <article
-            class="bg-surface-light shadow-s flex flex-col gap-2 rounded-lg p-6"
+            class="bg-surface-light border-surface-light-accented shadow-card flex flex-col gap-2 rounded-lg border p-6"
             :style="{ transform: `rotate(${tilt(index)}deg)` }"
           >
             <h3 class="text-subheading text-primary font-semibold">{{ entry.title }}</h3>

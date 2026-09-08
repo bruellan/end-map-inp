@@ -14,8 +14,12 @@
     background-color: var(--color-surface-light);
     color: var(--color-text-primary);
     font-family: var(--font-sans);
-    /* Évite le rebond horizontal sur les carrousels mobile. */
-    overflow-x: hidden;
+    /*
+     * Évite le rebond horizontal sur les carrousels mobile.
+     * `clip` et non `hidden` : `hidden` ferait du body un conteneur de
+     * défilement et neutraliserait le `position: sticky` de l'en-tête.
+     */
+    overflow-x: clip;
   }
 
   /* Cible tactile minimale de 44px sur les contrôles interactifs. */
