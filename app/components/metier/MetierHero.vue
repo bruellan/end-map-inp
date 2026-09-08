@@ -73,7 +73,7 @@ const pieces = computed(() =>
       :class="{ 'is-docked': docked }"
     >
       <p v-if="hero.eyebrow" class="text-label text-tertiary font-medium">{{ hero.eyebrow }}</p>
-      <h1 class="text-display text-primary font-semibold whitespace-pre-line">
+      <h1 class="hero-shine text-display text-primary font-semibold whitespace-pre-line">
         {{ hero.title }}
       </h1>
     </header>

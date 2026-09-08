@@ -95,37 +95,38 @@
   position: sticky;
   top: 0;
   height: var(--hero-title-height);
-  /* Rogne le reflet, qui déborde volontairement de la boîte. */
-  overflow: hidden;
   animation: heroTitleFade 0.9s var(--ease-drawer) 1.9s both;
 }
 
 /**
  * Reflet joué une fois, au moment où le titre s'immobilise sur le
- * panneau blanc. Une bande diagonale aux couleurs de la marque balaie
- * du coin haut-gauche au coin bas-droit.
+ * panneau blanc.
  *
- * `inset: -50%` donne à la bande de quoi entrer et sortir hors cadre ;
- * c'est le `overflow: hidden` du titre qui la rogne.
+ * Le dégradé est découpé par le texte (`background-clip: text`) : la
+ * lueur traverse les lettres au lieu de passer derrière elles. Ses deux
+ * extrémités reprennent la couleur normale du titre, si bien qu'au repos
+ * — animation terminée, ou mouvement réduit — le texte s'affiche
+ * exactement comme sans reflet.
+ *
+ * `background-position` va de 100% à 0% : la bande se déplace à l'inverse
+ * du fond, elle traverse donc bien du coin haut-gauche vers le bas-droit.
  */
-.hero-title::after {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(
-    135deg,
-    transparent 44%,
-    rgb(255 107 54 / 0.5) 49%,
-    rgb(245 119 213 / 0.55) 53%,
-    rgb(143 191 255 / 0.5) 57%,
-    transparent 62%
-  );
-}
-
-.hero-title.is-docked::after {
-  animation: titleShine 0.75s var(--ease-out) both;
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .hero-title.is-docked .hero-shine {
+    background-image: linear-gradient(
+      135deg,
+      var(--color-text-primary) 42%,
+      rgb(255 107 54) 47%,
+      rgb(245 119 213) 51%,
+      rgb(143 191 255) 55%,
+      var(--color-text-primary) 60%
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: titleShine 0.8s var(--ease-out) both;
+  }
 }
 
 /**
@@ -184,29 +185,24 @@
 
 @keyframes titleShine {
   from {
-    opacity: 0;
-    transform: translate(-55%, -55%);
-  }
-  25% {
-    opacity: 1;
+    background-position: 100% 100%;
   }
   to {
-    opacity: 0;
-    transform: translate(55%, 55%);
+    background-position: 0% 0%;
   }
 }
 
 /* ── Remontée du panneau, pilotée par le défilement ───────────────── */
 
 /**
- * Pendant la remontée, le contenu ne doit pas défiler : seul le bord
- * supérieur du panneau monte, jusqu'à venir se ranger sous le titre.
+ * Pendant la remontée, le contenu monte moins vite que le bord du
+ * panneau : à l'arrivée, le panneau touche le haut de l'écran et le
+ * contenu s'arrête juste sous le titre, sans laisser de blanc entre les
+ * deux.
  *
- * Le contenu est donc translaté vers le bas exactement de ce qu'on
- * défile, ce qui le laisse immobile à l'écran. La boîte du panneau, elle,
- * n'est pas translatée : son bord monte normalement. Une fois la course
- * parcourue, la translation est acquise et le défilement reprend son
- * cours.
+ * La translation vers le bas atteint donc une hauteur de titre, et non
+ * la course entière — celle-ci figerait le contenu et ouvrirait un vide
+ * de la hauteur de la course.
  *
  * `transform` et non `margin` : animer une marge redimensionnerait le
  * document à chaque image, et la longueur de défilement dépend
@@ -217,22 +213,22 @@
  */
 @supports (animation-timeline: scroll()) {
   .hero-panel-content {
-    animation: heroContentHold linear both;
+    animation: heroContentSettle linear both;
     animation-timeline: scroll(root block);
     animation-range: 0 var(--hero-rise);
   }
 
   .hero-panel {
-    padding-bottom: var(--hero-rise);
+    padding-bottom: var(--hero-title-height);
   }
 }
 
-@keyframes heroContentHold {
+@keyframes heroContentSettle {
   from {
     transform: translateY(0);
   }
   to {
-    transform: translateY(var(--hero-rise));
+    transform: translateY(var(--hero-title-height));
   }
 }
 
