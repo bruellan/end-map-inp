@@ -81,8 +81,13 @@ const pieces = computed(() =>
 </template>
 
 <style scoped>
-/* 100 / 62 : le plateau couvre l'écran au départ, vaut 1 à l'arrivée. */
+/*
+ * Le plateau couvre l'écran au départ (100 / 62) et retombe à l'échelle
+ * de repos. Ancré en bas : le collage affleure toujours le bord
+ * inférieur de l'en-tête, quelle que soit l'échelle.
+ */
 .hero-stage {
+  transform: scale(var(--hero-collage-scale));
   transform-origin: bottom center;
   animation: heroDezoom 0.9s var(--ease-drawer) 1.9s both;
 }
@@ -92,7 +97,7 @@ const pieces = computed(() =>
     transform: scale(1.613);
   }
   to {
-    transform: scale(1);
+    transform: scale(var(--hero-collage-scale));
   }
 }
 

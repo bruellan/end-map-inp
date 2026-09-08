@@ -12,7 +12,9 @@ defineProps<{ section: SectionOfType<'statistics'> }>()
         <BaseEmoji :name="item.icon" />
         <div>
           <p class="text-subheading text-primary font-semibold">{{ item.value }}</p>
-          <p class="text-body text-tertiary font-medium">{{ item.label }}</p>
+          <!-- Les retours à la ligne viennent du contenu : la maquette les fixe,
+               et le calage automatique ne tombe pas au même endroit. -->
+          <p class="text-body text-tertiary font-medium whitespace-pre-line">{{ item.label }}</p>
         </div>
       </li>
     </ul>
