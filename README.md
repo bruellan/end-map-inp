@@ -188,6 +188,22 @@ le document à chaque image alors que la longueur de défilement dépend de cett
 hauteur ne se stabiliserait pas. Là où l'API n'existe pas, un `@supports` rend le
 titre solidaire de la page : moins joli, mais rien n'est masqué.
 
+### Les pièces du collage qui racontent quelque chose
+
+Une pièce du collage de fin porte éventuellement un titre et un texte. Renseignés,
+elle devient cliquable et ouvre un récit en plein écran ; laissés vides, elle reste
+purement décorative. Ce sont deux rendus distincts et non un bouton désactivé : un
+décor n'a rien à faire dans l'ordre de tabulation, et un lecteur d'écran ne doit pas
+l'annoncer.
+
+Le récit s'ouvre dans un `<dialog>` natif. Le piège de focus, la fermeture par Échap
+et la couche supérieure viennent avec l'élément — les réimplémenter correctement à la
+main coûte bien plus cher que de s'y plier.
+
+L'en-tête, lui, ne stocke que des URL : ses illustrations sont décoratives par
+nature. La conversion se fait dans le composant d'en-tête plutôt qu'en élargissant le
+contrat du collage à deux formes d'entrée.
+
 ### Le bloc de fin, ou pourquoi les pourcentages mentent
 
 Trois pièges s'y sont succédé, tous liés au repère de référence.

@@ -143,6 +143,20 @@ const quizCtaSectionSchema = sectionBaseSchema.extend({
   decorations: z.array(imageRefSchema).max(4),
 })
 
+/**
+ * Une pièce du collage de fin de page.
+ *
+ * `title` et `body` alimentent le dialog plein écran ouvert au clic sur
+ * l'illustration. Laissés vides, la pièce reste purement décorative et
+ * n'est pas cliquable — c'est un état éditorial valide, pas un oubli.
+ */
+const collageStorySchema = z.object({
+  id: z.string().min(1),
+  image: imageRefSchema,
+  title: z.string(),
+  body: z.string(),
+})
+
 /** Bloc de fin de page « Prends une longueur d'avance ». */
 const tipsSectionSchema = sectionBaseSchema.extend({
   type: z.literal('tips'),
@@ -156,12 +170,12 @@ const tipsSectionSchema = sectionBaseSchema.extend({
     }),
   ),
   /**
-   * Collage illustré en pied de bloc. Comme pour l'encart quiz, le
-   * contenu ne fournit que les images, dans l'ordre : leurs positions et
-   * rotations sont relevées de la maquette et fixées par le composant.
-   * Les emplacements laissés vides ne rendent rien.
+   * Collage illustré en pied de bloc. Le contenu fournit les pièces dans
+   * l'ordre : leurs positions et rotations sont relevées de la maquette et
+   * fixées par le composant. Une pièce sans image ne rend rien ; une pièce
+   * avec titre/texte devient cliquable et ouvre un dialog plein écran.
    */
-  collage: z.array(imageRefSchema).max(12),
+  collage: z.array(collageStorySchema).max(12),
 })
 
 /* ── Union & page ─────────────────────────────────────────────────── */
@@ -206,6 +220,7 @@ export const metierSchema = z.object({
 
 export type Section = z.infer<typeof sectionSchema>
 export type SectionType = Section['type']
+export type CollageStory = z.infer<typeof collageStorySchema>
 export type MetierHero = z.infer<typeof metierHeroSchema>
 export type Metier = z.infer<typeof metierSchema>
 

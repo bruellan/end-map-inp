@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SectionOfType } from '#shared/schemas/metier'
+import type { CollageStory, SectionOfType } from '#shared/schemas/metier'
 import { COLLAGE_ASPECT } from './collageLayout'
 
 const props = defineProps<{ section: SectionOfType<'tips'> }>()
@@ -9,6 +9,9 @@ const AUTOPLAY_MS = 5000
 
 /** Déplacement horizontal, en px, au-delà duquel on change de carte. */
 const DRAG_THRESHOLD = 60
+
+/** Récit affiché en dialog, `null` quand aucun n'est ouvert. */
+const openStory = ref<CollageStory | null>(null)
 
 const activeIndex = ref(0)
 const activeTip = computed(() => props.section.items[activeIndex.value])
@@ -213,9 +216,11 @@ function onPointerUp() {
         :style="{ aspectRatio: COLLAGE_ASPECT }"
         aria-hidden="true"
       >
-        <MetierCollage :images="section.collage" />
+        <MetierCollage :pieces="section.collage" @open="openStory = $event" />
       </RevealOnScroll>
     </div>
+
+    <MetierCollageStoryDialog v-model="openStory" />
   </RevealOnScroll>
 </template>
 

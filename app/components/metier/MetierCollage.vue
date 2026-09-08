@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { CollageStory } from '#shared/schemas/metier'
+import { COLLAGE_SLOTS } from './collageLayout'
+
 /**
  * Collage illustré de la maquette.
  *
@@ -6,15 +9,18 @@
  * décidé par le parent, via une règle CSS qui cible `.collage-item`.
  * L'en-tête les fait entrer sur une ligne de temps, le bloc de fin au
  * moment où l'on arrive dessus — même composition, deux déclencheurs.
+ *
+ * Une pièce porteuse d'un titre devient un bouton : le parent décide de
+ * ce qu'il en fait. Les autres restent décoratives, donc invisibles à un
+ * lecteur d'écran.
  */
-import { COLLAGE_SLOTS } from './collageLayout'
-
 const props = defineProps<{
-  /** URL par emplacement, dans l'ordre. Un trou laisse l'emplacement libre. */
-  images: readonly string[]
+  pieces: readonly CollageStory[]
   /** Décalage ajouté à chaque `--delay`, pour caler sur la ligne de temps du parent. */
   delayOffset?: number
 }>()
+
+const emit = defineEmits<{ open: [CollageStory] }>()
 
 /**
  * Les illustrations montent depuis le bas du cadre, chacune décalée vers
@@ -25,38 +31,57 @@ const props = defineProps<{
  */
 const items = computed(() =>
   COLLAGE_SLOTS.map((slot, index) => {
+    const piece = props.pieces[index]
     const centreOffset = (slot.left + slot.width / 2 - 50) / 50 // -1 (gauche) → 1 (droite)
     return {
-      slot,
-      url: props.images[index] ?? '',
-      fromX: `${(centreOffset * 45).toFixed(0)}%`,
-      // Les pièces du fond entrent en premier, celles du premier plan
-      // ensuite : le collage se compose sous les yeux.
-      delay: `${(props.delayOffset ?? 0) + slot.z * 45}ms`,
+      piece,
+      style: {
+        left: `${slot.left}%`,
+        top: `${slot.top}%`,
+        width: `${slot.width}%`,
+        height: `${slot.height}%`,
+        zIndex: slot.z,
+        '--rot': `${slot.rotate}deg`,
+        '--from-x': `${(centreOffset * 45).toFixed(0)}%`,
+        // Les pièces du fond entrent en premier, celles du premier plan
+        // ensuite : le collage se compose sous les yeux.
+        '--delay': `${(props.delayOffset ?? 0) + slot.z * 45}ms`,
+      },
     }
-  }).filter((entry) => entry.url),
+  }).filter((entry): entry is typeof entry & { piece: CollageStory } =>
+    Boolean(entry.piece?.image),
+  ),
 )
 </script>
 
 <template>
-  <img
-    v-for="(entry, index) in items"
-    :key="`${entry.url}-${index}`"
-    :src="entry.url"
-    alt=""
-    loading="lazy"
-    class="collage-item absolute object-contain"
-    :style="{
-      left: `${entry.slot.left}%`,
-      top: `${entry.slot.top}%`,
-      width: `${entry.slot.width}%`,
-      height: `${entry.slot.height}%`,
-      zIndex: entry.slot.z,
-      '--rot': `${entry.slot.rotate}deg`,
-      '--from-x': entry.fromX,
-      '--delay': entry.delay,
-    }"
-  />
+  <template v-for="entry in items" :key="entry.piece.id">
+    <!--
+      Une pièce avec un titre s'ouvre ; sans titre elle n'est qu'un décor.
+      Deux rendus distincts plutôt qu'un bouton désactivé : un décor ne
+      doit pas exister pour la navigation au clavier.
+    -->
+    <button
+      v-if="entry.piece.title"
+      type="button"
+      class="collage-item absolute cursor-pointer transition-transform duration-200 ease-out active:scale-95"
+      :style="entry.style"
+      :aria-label="`En savoir plus : ${entry.piece.title}`"
+      @click="emit('open', entry.piece)"
+    >
+      <img :src="entry.piece.image" alt="" class="size-full object-contain" loading="lazy" />
+    </button>
+
+    <img
+      v-else
+      :src="entry.piece.image"
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      class="collage-item absolute object-contain"
+      :style="entry.style"
+    />
+  </template>
 </template>
 
 <style scoped>

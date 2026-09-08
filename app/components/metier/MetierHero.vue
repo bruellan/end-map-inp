@@ -2,7 +2,7 @@
 import type { MetierHero } from '#shared/schemas/metier'
 import { COLLAGE_ASPECT } from './collageLayout'
 
-defineProps<{ hero: MetierHero }>()
+const props = defineProps<{ hero: MetierHero }>()
 
 /**
  * Séquence d'ouverture.
@@ -22,6 +22,21 @@ defineProps<{ hero: MetierHero }>()
  * l'empilement (voir assets/css/hero.css).
  */
 const COLLAGE_START = 250
+
+/**
+ * L'en-tête ne stocke que des URL : ses illustrations sont purement
+ * décoratives, contrairement à celles du bloc de fin qui peuvent porter
+ * un récit. On les convertit ici plutôt que d'élargir le contrat du
+ * composant de collage à deux formes d'entrée.
+ */
+const pieces = computed(() =>
+  props.hero.collage.map((image, index) => ({
+    id: `hero-collage-${index}`,
+    image,
+    title: '',
+    body: '',
+  })),
+)
 </script>
 
 <template>
@@ -38,7 +53,7 @@ const COLLAGE_START = 250
         :style="{ aspectRatio: COLLAGE_ASPECT }"
         aria-hidden="true"
       >
-        <MetierCollage :images="hero.collage" :delay-offset="COLLAGE_START" />
+        <MetierCollage :pieces="pieces" :delay-offset="COLLAGE_START" />
       </div>
     </div>
   </div>

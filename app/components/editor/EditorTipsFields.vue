@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SectionOfType } from '#shared/schemas/metier'
-import { COLLAGE_SLOT_COUNT } from '~/components/metier/collageLayout'
 
 const section = defineModel<SectionOfType<'tips'>>({ required: true })
 
@@ -24,11 +23,6 @@ const createTip = () => ({ id: createId('tip'), icon: 'pushpin', lead: '', body:
       </BaseField>
     </EditorRepeater>
 
-    <EditorImageSlots
-      v-model="section.collage"
-      :count="COLLAGE_SLOT_COUNT"
-      label="Collage illustré"
-      hint="Positions et rotations fixées par la maquette. Laisser vide pour ne rien afficher."
-    />
+    <EditorCollageStories v-model="section.collage" />
   </div>
 </template>
