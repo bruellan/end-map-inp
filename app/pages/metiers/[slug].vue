@@ -57,8 +57,10 @@ const endsFlush = computed(() => {
   return last ? BLEEDS_TO_BOTTOM.has(last.type) && !last.separatorAfter : false
 })
 
+// Le suffixe « · Edumapper » est ajouté par le gabarit global (app.vue) ;
+// on ne fournit ici que la partie spécifique à la fiche.
 useSeoMeta({
-  title: () => (metier.value ? `${metier.value.hero.title} — Edumapper` : 'Edumapper'),
+  title: () => metier.value?.hero.title,
   description: () => metier.value?.hero.subtitle,
 })
 </script>
@@ -66,15 +68,14 @@ useSeoMeta({
 <template>
   <article v-if="metier" class="relative" :class="endsFlush ? 'pb-0' : 'pb-18'">
     <!--
-      En-tête collant : il reste en place pendant que le panneau blanc
-      remonte par-dessus. Une fois recouvert, le défilement reprend son
-      cours normal — le titre n'a pas bougé d'un pixel entre-temps.
+      L'en-tête rend deux calques frères — fond et titre — qui encadrent
+      le panneau dans l'empilement : le panneau recouvre le collage en
+      remontant mais passe sous le titre, qui reste en haut.
+      Les hauteurs sont partagées dans assets/css/hero.css.
     -->
-    <div class="sticky top-0 z-0">
-      <MetierHero :hero="metier.hero" />
-    </div>
+    <MetierHero :hero="metier.hero" />
 
-    <div class="bg-surface-light relative z-10 -mt-8 rounded-t-xl">
+    <div class="hero-panel bg-surface-light rounded-t-xl">
       <!--
         Sentinelle en tête du panneau : elle dit quand celui-ci atteint le
         haut de l'écran. Attachée au panneau plutôt qu'à une position

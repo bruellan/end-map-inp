@@ -1,7 +1,10 @@
 <script setup lang="ts">
 const { data } = await useFetch<{ slugs: string[] }>('/api/metiers')
 
-useSeoMeta({ title: 'Métiers — Edumapper' })
+useSeoMeta({
+  title: 'Métiers',
+  description: 'Explore tous les métiers et découvre celui qui te correspond avec Edumapper.',
+})
 </script>
 
 <template>

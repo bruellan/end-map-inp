@@ -32,7 +32,7 @@ onBeforeRouteLeave(() => {
   return confirm('Des modifications ne sont pas enregistrées. Quitter quand même ?')
 })
 
-useSeoMeta({ title: () => `Éditeur — ${draft.value?.hero.title ?? slug.value}` })
+useSeoMeta({ title: () => `Éditeur · ${draft.value?.hero.title ?? slug.value}` })
 </script>
 
 <template>

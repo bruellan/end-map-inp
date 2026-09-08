@@ -96,13 +96,13 @@ const hotellerieRestaurationTourisme = {
           id: 'stat-postes',
           value: '319 000',
           label: 'postes à pourvoir en 2026',
-          icon: 'chart-increasing',
+          icon: 'rocket',
         },
         {
           id: 'stat-pros',
           value: '1,3 million',
           label: 'de professionnels en France',
-          icon: 'busts-in-silhouette',
+          icon: 'woman-cook',
         },
         {
           id: 'stat-formations',
@@ -143,7 +143,7 @@ const hotellerieRestaurationTourisme = {
         {
           id: 'tab-plus',
           label: 'Les plus',
-          icon: 'thumbs-up',
+          icon: 'heart-on-fire',
           entries: [
             {
               id: 'plus-ouvert',
@@ -159,7 +159,7 @@ const hotellerieRestaurationTourisme = {
         },
         // L'onglet « Les moins » existe dans la maquette mais son
         // contenu n'y est pas visible : à saisir dans l'éditeur.
-        { id: 'tab-moins', label: 'Les moins', icon: 'thumbs-down', entries: [] },
+        { id: 'tab-moins', label: 'Les moins', icon: 'skull-and-crossbones', entries: [] },
       ],
     },
     {

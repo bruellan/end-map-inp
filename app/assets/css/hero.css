@@ -1,0 +1,127 @@
+/**
+ * Mise en page de l'en-tête, et sa séquence d'ouverture.
+ *
+ * Trois éléments s'accordent ici : le fond (dégradé + collage), le bloc
+ * de titre, et le panneau de contenu. Ils vivent dans deux composants
+ * différents mais partagent les mêmes hauteurs, d'où ce fichier commun
+ * plutôt que des valeurs recopiées de part et d'autre.
+ *
+ * Empilement voulu, du fond vers l'avant :
+ *
+ *   fond (z 0)  <  panneau (z 10)  <  titre (z 20)
+ *
+ * Le panneau recouvre donc le collage en remontant, mais passe sous le
+ * titre — qui reste lisible en haut une fois le panneau arrivé.
+ *
+ * Les trois sont `sticky` ou en flux, jamais `fixed` : le titre doit
+ * rester dans le flux pour que `position: sticky` le retienne, et le
+ * panneau doit pousser la hauteur du document.
+ */
+
+:root {
+  /** Hauteur de l'en-tête au repos. */
+  --hero-height: 62dvh;
+  /** Hauteur de départ de la séquence d'ouverture : plein écran. */
+  --hero-height-intro: 100dvh;
+  /**
+   * Hauteur réservée au bloc de titre.
+   *
+   * Fixe, parce que le panneau doit connaître sa propre position de
+   * départ sans mesurer quoi que ce soit en JavaScript. Généreuse pour
+   * un titre de trois lignes ; au-delà, le titre déborde sur le collage
+   * plutôt que de décaler le panneau.
+   */
+  --hero-title-height: 288px;
+  /** Chevauchement du panneau sur l'en-tête, qui laisse voir son arrondi. */
+  --hero-panel-overlap: 32px;
+}
+
+/**
+ * Fond de l'en-tête. Collant : il reste en place pendant que le panneau
+ * remonte par-dessus.
+ *
+ * `background-size` est calé sur la hauteur de l'en-tête, et non sur
+ * celle de l'élément : le bloc de titre reprend exactement le même
+ * dégradé, et les deux étant ancrés en haut, la jointure est invisible.
+ */
+.hero-backdrop {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: var(--hero-height);
+  overflow: hidden;
+  background-size: 100% var(--hero-height);
+  background-position: top center;
+  animation: heroBackdropCollapse 0.9s var(--ease-drawer) 1.9s both;
+}
+
+/**
+ * Bloc de titre. Remonté par-dessus le fond par une marge négative, puis
+ * retenu en haut : il ne bouge plus, ni pendant la remontée du panneau,
+ * ni après.
+ */
+.hero-title {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: var(--hero-title-height);
+  margin-top: calc(-1 * var(--hero-height));
+  background-size: 100% var(--hero-height);
+  background-position: top center;
+  animation: heroTitleLift 0.9s var(--ease-drawer) 1.9s both;
+}
+
+/**
+ * Panneau de contenu. En flux normal : c'est lui qui donne sa hauteur au
+ * document. Sa marge le place sous l'en-tête, le chevauchement près.
+ */
+.hero-panel {
+  position: relative;
+  z-index: 10;
+  margin-top: calc(var(--hero-height) - var(--hero-title-height) - var(--hero-panel-overlap));
+  animation: heroPanelSettle 0.9s var(--ease-drawer) 1.9s both;
+}
+
+/* ── Séquence d'ouverture ─────────────────────────────────────────── */
+
+/**
+ * Les trois keyframes partagent durée, délai et courbe : elles décrivent
+ * un seul mouvement, celui de l'en-tête qui passe du plein écran à sa
+ * hauteur définitive. Les séparer est une contrainte du CSS, pas une
+ * intention.
+ */
+
+@keyframes heroBackdropCollapse {
+  from {
+    height: var(--hero-height-intro);
+    background-size: 100% var(--hero-height-intro);
+  }
+  to {
+    height: var(--hero-height);
+    background-size: 100% var(--hero-height);
+  }
+}
+
+@keyframes heroTitleLift {
+  from {
+    margin-top: calc(-1 * var(--hero-height-intro));
+    background-size: 100% var(--hero-height-intro);
+    opacity: 0;
+  }
+  to {
+    margin-top: calc(-1 * var(--hero-height));
+    background-size: 100% var(--hero-height);
+    opacity: 1;
+  }
+}
+
+@keyframes heroPanelSettle {
+  from {
+    margin-top: calc(
+      var(--hero-height-intro) - var(--hero-title-height) - var(--hero-panel-overlap)
+    );
+  }
+  to {
+    margin-top: calc(var(--hero-height) - var(--hero-title-height) - var(--hero-panel-overlap));
+  }
+}
