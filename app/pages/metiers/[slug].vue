@@ -52,14 +52,5 @@ useSeoMeta({
         <hr v-if="section.separatorAfter" class="bg-surface-overlay-5 -mx-4 mt-10 h-0.5 border-0" />
       </div>
     </TransitionGroup>
-
-    <footer class="px-4 pt-12 text-center">
-      <NuxtLink
-        :to="`/${slug}/editor`"
-        class="text-label text-tertiary font-medium underline underline-offset-4"
-      >
-        Modifier cette page
-      </NuxtLink>
-    </footer>
   </article>
 </template>

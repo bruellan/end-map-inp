@@ -160,3 +160,13 @@
     transform: scaleX(1);
   }
 }
+
+/** Remplissage de la barre de progression d'un carrousel automatique. */
+@keyframes progressFill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

@@ -155,6 +155,7 @@
   --animate-skeleton-pulse: skeletonPulse 1.8s ease-in-out infinite;
   --animate-infinite-scroll: infinite-scroll 30s linear infinite;
   --animate-bar-fill: barFill 0.7s var(--ease-drawer) both;
+  --animate-progress-fill: progressFill linear both;
 }
 
 /**

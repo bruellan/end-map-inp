@@ -143,16 +143,25 @@ const quizCtaSectionSchema = sectionBaseSchema.extend({
   decorations: z.array(imageRefSchema).max(4),
 })
 
-/** Carrousel de conseils en fin de page (bloc « Prends une longueur d'avance »). */
+/** Bloc de fin de page « Prends une longueur d'avance ». */
 const tipsSectionSchema = sectionBaseSchema.extend({
   type: z.literal('tips'),
   items: z.array(
     z.object({
       id: z.string().min(1),
       icon: z.string(),
+      /** Amorce mise en avant, avant le corps du conseil. */
+      lead: z.string(),
       body: z.string(),
     }),
   ),
+  /**
+   * Collage illustré en pied de bloc. Comme pour l'encart quiz, le
+   * contenu ne fournit que les images, dans l'ordre : leurs positions et
+   * rotations sont relevées de la maquette et fixées par le composant.
+   * Les emplacements laissés vides ne rendent rien.
+   */
+  collage: z.array(imageRefSchema).max(12),
 })
 
 /* ── Union & page ─────────────────────────────────────────────────── */

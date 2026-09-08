@@ -50,15 +50,14 @@ bun run build       # build de production
 
 **Pas fait**
 
-- **Quatre détails ne correspondent pas encore.** Les photos des cartes « Gestion
-  Hôtelière » et « Service & Accueil » sont des suppositions : l'export Figma livre
-  31 visuels sans indiquer lequel va où, et le cadre photo est vide dans le fichier
-  que l'API renvoie. Le pictogramme de l'onglet « Les plus » et celui du bouton
-  « Lire la suite » n'ont pas pu être identifiés non plus. Enfin le bandeau
-  illustré en bas de page (collage dégradé) n'est pas repris.
+- **Deux pictogrammes ne sont pas les bons** : celui de l'onglet « Les plus » et
+  celui du bouton « Lire la suite ». Ils font 16 à 24px dans la maquette et n'ont
+  pas pu être identifiés dans l'export ; ce sont des approximations.
 - **La composition des cartes est simplifiée.** La maquette superpose jusqu'à trois
   éléments par carte (vignette photo + un ou deux objets, chacun avec sa rotation) ;
   le composant en rend deux, une photo et un objet.
+- Le carrousel de fin **avance mais ne se fait pas glisser à la souris** : le geste
+  est capté au pointeur, donc au doigt et au trackpad, pas en cliquer-déposer.
 - **Les animations ne sont pas celles du Drive.** Le dossier n'a pas été fourni en
   local. Elles reprennent les keyframes et les courbes du build de production
   d'edumapper.com — cohérent avec leur design system, mais ce n'est pas la référence
@@ -159,6 +158,25 @@ aperçus vidéo dans les cartes métier, déduite du rang et non stockée.
 La limite est assumée : une cinquième image décorative n'aurait pas de place définie,
 d'où le `.max(4)` dans le schéma plutôt qu'un silence à l'affichage.
 
+### Le bloc de fin, ou pourquoi les pourcentages mentent
+
+Trois pièges s'y sont succédé, tous liés au repère de référence.
+
+Les positions du collage étaient d'abord exprimées dans le repère du bloc entier
+(430x932) alors que notre bloc est plus court : tout se retrouvait écrasé
+verticalement. Elles sont maintenant exprimées dans le repère du **groupe
+d'images** (542x402), reproduit à l'identique par une couche en `aspect-ratio` —
+les pourcentages tombent juste quelle que soit la largeur d'écran.
+
+Le débord vertical passait par `bottom: -22.6%`. En CSS, un pourcentage sur
+`bottom` se calcule sur la hauteur du **conteneur**, pas de l'élément : la couche
+descendait deux fois trop bas et la moitié du collage disparaissait. C'est
+`translate-y` qui fait le travail, lui relatif à l'élément.
+
+Enfin l'ordre de peinture : Figma liste les enfants du premier plan vers l'arrière,
+le DOM fait l'inverse. Sans `zIndex` décroissant, l'herbe recouvrait le personnage
+qu'elle doit encadrer.
+
 ### Emoji : Fluent 3D, servis sans copie
 
 La maquette utilise les Fluent Emoji **3D** de Microsoft. Ils n'existent qu'en
@@ -204,6 +222,12 @@ edumapper.com n'embarque aucune librairie d'animation. Ce projet non plus.
   la hauteur réelle du panneau n'a jamais besoin d'être mesurée en JS.
 - `RevealOnScroll` (IntersectionObserver via VueUse) pour le scroll-reveal — la seule
   chose que Vue ne fournit pas nativement. L'animation reste une keyframe CSS.
+- Le carrousel de fin avance seul toutes les 5 secondes, et le point actif _est_ la
+  minuterie : une barre qui se remplit sur la durée. Le remontage est forcé par une
+  clé plutôt que par une remise à zéro manuelle. Il se met en pause au survol, au
+  toucher et au focus clavier, et ne démarre pas si `prefers-reduced-motion` est
+  actif — un carrousel qui bouge pendant qu'on le lit est une gêne, et une cible
+  qui se dérobe sous le doigt en est une autre.
 
 Deux détails qui ne se voient pas mais qui comptent :
 
@@ -247,8 +271,8 @@ C'est noté ici parce qu'un vert qui ne vérifie rien est pire qu'un rouge.
 
 Dans cet ordre.
 
-1. **Confirmer les quatre détails non identifiés** (deux photos de cartes, deux
-   pictogrammes) et reprendre le bandeau illustré de fin de page.
+1. **Confirmer les deux pictogrammes non identifiés** et compléter la composition
+   des cartes métier.
 2. **Les animations du Drive**, une fois les références disponibles.
 3. **Tests** : Vitest sur le schéma et `useMetierDraft` (réordonnancement, détection
    de modifications), un test de composant par section, un Playwright sur le cycle
