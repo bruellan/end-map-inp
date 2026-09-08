@@ -22,6 +22,20 @@ import { z } from 'zod'
  * « PE - Test » (node 1-262).
  */
 
+/* ── Briques réutilisées ──────────────────────────────────────────── */
+
+/**
+ * Référence d'image : URL absolue (`https://…`) ou chemin servi par
+ * l'application (`/images/…`). La chaîne vide signifie « aucune image »,
+ * et non « champ manquant » — c'est un état valide que l'éditeur produit
+ * en vidant le champ.
+ */
+const imageRefSchema = z.union([
+  z.url(),
+  z.string().regex(/^\/[^\s]*$/, 'Chemin absolu depuis la racine du site'),
+  z.literal(''),
+])
+
 /* ── Enveloppe commune ────────────────────────────────────────────── */
 
 /**
@@ -53,7 +67,7 @@ const metierCardsSectionSchema = sectionBaseSchema.extend({
     z.object({
       id: z.string().min(1),
       label: z.string(),
-      imageUrl: z.string().url().or(z.literal('')),
+      imageUrl: imageRefSchema,
     }),
   ),
 })
@@ -118,6 +132,13 @@ const quizCtaSectionSchema = sectionBaseSchema.extend({
   subtitle: z.string(),
   ctaLabel: z.string(),
   ctaHref: z.string(),
+  /**
+   * Visuels décoratifs disposés autour de l'encart. Le contenu décide
+   * *quelles* images ; leur placement est fixé par le composant, parce
+   * que c'est une composition graphique, pas une donnée éditoriale.
+   * Au-delà de quatre, les suivantes sont ignorées à l'affichage.
+   */
+  decorations: z.array(imageRefSchema).max(4),
 })
 
 /* ── Union & page ─────────────────────────────────────────────────── */

@@ -27,10 +27,14 @@ const hotellerieRestaurationTourisme = {
       visible: true,
       separatorAfter: true,
       items: [
-        { id: 'card-resto', label: 'Restauration\n& Cuisine', imageUrl: '' },
-        { id: 'card-hotel', label: 'Gestion\nHôtelière', imageUrl: '' },
-        { id: 'card-tourisme', label: 'Tourisme &\nExpérience voyageur', imageUrl: '' },
-        { id: 'card-service', label: 'Service\n& Accueil', imageUrl: '' },
+        { id: 'card-resto', label: 'Restauration\n& Cuisine', imageUrl: '/images/fork.png' },
+        { id: 'card-hotel', label: 'Gestion\nHôtelière', imageUrl: '/images/key.png' },
+        {
+          id: 'card-tourisme',
+          label: 'Tourisme &\nExpérience voyageur',
+          imageUrl: '/images/plane-ticket.png',
+        },
+        { id: 'card-service', label: 'Service\n& Accueil', imageUrl: '/images/white-glove.png' },
       ],
     },
     {
@@ -125,6 +129,12 @@ const hotellerieRestaurationTourisme = {
       subtitle: 'En 2 min. top chrono !',
       ctaLabel: 'Passe le test',
       ctaHref: '/onboarding',
+      decorations: [
+        '/images/plane-ticket.png',
+        '/images/key.png',
+        '/images/stamp.png',
+        '/images/fork.png',
+      ],
     },
   ],
   updatedAt: '2026-01-01T00:00:00.000Z',

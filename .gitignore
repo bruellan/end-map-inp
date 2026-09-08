@@ -28,3 +28,7 @@ logs
 
 # Exports Figma et références d'animation
 design
+
+# Export brut Figma (72 Mo) : source locale, pas un livrable.
+# Les visuels réellement utilisés sont copiés dans public/images/.
+/assets

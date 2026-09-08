@@ -4,12 +4,12 @@ import { findMetier } from '../../utils/metier-repository'
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
   if (!slug) {
-    throw createError({ statusCode: 400, statusMessage: 'Slug manquant' })
+    throw createError({ statusCode: 400, message: 'Slug manquant' })
   }
 
   const metier = await findMetier(slug)
   if (!metier) {
-    throw createError({ statusCode: 404, statusMessage: `Métier « ${slug} » introuvable` })
+    throw createError({ statusCode: 404, message: `Métier « ${slug} » introuvable` })
   }
 
   return metier

@@ -53,10 +53,12 @@ bun run build       # build de production
   `style`), donc les nombres sont exacts. Mais l'endpoint de rendu d'images est
   resté en 429 pendant toute la session : je n'ai jamais pu poser le rendu à côté
   de la maquette. Des écarts de composition sont probables.
-- **Les images sont absentes.** La maquette contient des visuels 3D (couverts, clé,
-  carte d'embarquement, aperçus vidéo dans les cartes métier) et des icônes de
-  statistiques. Non exportés, même cause. Les emplacements sont en place et
-  alimentables par l'éditeur ; les icônes de stats sont des emoji en attendant.
+- **Les images sont partiellement en place.** Les visuels 3D des cartes métier et de
+  l'encart quiz sont exportés du Figma et intégrés (`public/images/`). En revanche les
+  icônes des chiffres clés sont des emoji faute d'export, et la composition des cartes
+  est simplifiée : la maquette superpose jusqu'à trois éléments par carte (aperçu
+  vidéo + un ou deux objets, chacun avec sa rotation), le composant en rend deux.
+  Ce choix est aussi un choix de modèle — voir plus bas.
 - **Les animations ne sont pas celles du Drive.** Le dossier n'a pas été fourni en
   local. Elles reprennent les keyframes et les courbes du build de production
   d'edumapper.com — cohérent avec leur design system, mais ce n'est pas la référence
@@ -142,6 +144,24 @@ Le contenu de départ est recopié dans le stockage à la première lecture, pui
 jamais : le seed ne réécrit pas par-dessus le travail de l'équipe. Pour repartir de
 zéro, supprimer `.data/`.
 
+### Où s'arrête le contenu, où commence la composition
+
+La maquette place les visuels décoratifs de l'encart quiz à des coordonnées et des
+rotations précises (`x=-39 y=53 rot=30°`…). Deux façons de le modéliser :
+
+- tout mettre dans le contenu — chaque image porte sa position et sa rotation. Le
+  schéma devient un moteur de mise en page, et l'équipe éditoriale se retrouve à
+  saisir des degrés dans un CMS.
+- ne mettre dans le contenu que **quelles** images, et fixer **où** elles vont dans
+  le composant.
+
+C'est la seconde qui est retenue : `decorations: string[]` avec `.max(4)`, et une
+constante `SLOTS` côté composant. Même logique pour l'inclinaison alternée des
+aperçus vidéo dans les cartes métier, déduite du rang et non stockée.
+
+La limite est assumée : une cinquième image décorative n'aurait pas de place définie,
+d'où le `.max(4)` dans le schéma plutôt qu'un silence à l'affichage.
+
 ### Design system
 
 Deux sources, dans cet ordre :
@@ -201,6 +221,9 @@ C'est noté ici parce qu'un vert qui ne vérifie rien est pire qu'un rouge.
   `PUT` 200 → la page reflète les trois changements → persisté sur disque.
 - Payload invalide → 422 avec le détail des champs fautifs. Slug inconnu → 404 sur
   l'API comme sur la page.
+- La validation a attrapé une vraie erreur en cours de route : les chemins d'images
+  servis par l'app (`/images/fork.png`) ne passent pas `z.url()`, qui exige une URL
+  absolue. D'où `imageRefSchema`, qui accepte les deux formes.
 - Exhaustivité des registres → erreur de compilation (test destructif, cf. plus haut).
 
 ## Avec deux jours de plus
@@ -209,7 +232,7 @@ Dans cet ordre.
 
 1. **Poser le rendu à côté de la maquette** et corriger les écarts de composition —
    les nombres sont bons, la mise en page n'a jamais été confrontée à l'image.
-   Exporter les visuels 3D et les icônes de statistiques.
+   Exporter les icônes de statistiques et compléter la composition des cartes.
 2. **Les animations du Drive**, une fois les références disponibles.
 3. **Tests** : Vitest sur le schéma et `useMetierDraft` (réordonnancement, détection
    de modifications), un test de composant par section, un Playwright sur le cycle

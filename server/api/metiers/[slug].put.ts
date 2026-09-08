@@ -12,7 +12,7 @@ import { saveMetier } from '../../utils/metier-repository'
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
   if (!slug) {
-    throw createError({ statusCode: 400, statusMessage: 'Slug manquant' })
+    throw createError({ statusCode: 400, message: 'Slug manquant' })
   }
 
   const body = await readBody(event)
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
   if (!parsed.success) {
     throw createError({
       statusCode: 422,
-      statusMessage: 'Contenu invalide',
+      message: 'Contenu invalide',
       data: z.treeifyError(parsed.error),
     })
   }

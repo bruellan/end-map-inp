@@ -17,7 +17,7 @@ const { data: source, error: loadError } = await useMetier(slug)
 if (loadError.value) {
   throw createError({
     statusCode: loadError.value.statusCode ?? 500,
-    statusMessage: loadError.value.statusMessage ?? 'Page métier indisponible',
+    message: loadError.value.message ?? 'Page métier indisponible',
     fatal: true,
   })
 }

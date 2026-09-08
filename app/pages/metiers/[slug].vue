@@ -18,7 +18,7 @@ const { data: metier, error } = await useMetier(slug)
 if (error.value) {
   throw createError({
     statusCode: error.value.statusCode ?? 500,
-    statusMessage: error.value.statusMessage ?? 'Page métier indisponible',
+    message: error.value.message ?? 'Page métier indisponible',
     fatal: true,
   })
 }

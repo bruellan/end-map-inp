@@ -49,7 +49,7 @@ export async function findMetier(slug: string): Promise<Metier | null> {
   if (!parsed.success) {
     throw createError({
       statusCode: 500,
-      statusMessage: `Contenu stocké invalide pour « ${slug} »`,
+      message: `Contenu stocké invalide pour « ${slug} »`,
       data: z.treeifyError(parsed.error),
     })
   }
@@ -74,7 +74,7 @@ export async function listMetierSlugs(): Promise<string[]> {
 export async function saveMetier(slug: string, update: MetierUpdate): Promise<Metier> {
   const existing = await findMetier(slug)
   if (!existing) {
-    throw createError({ statusCode: 404, statusMessage: `Métier « ${slug} » introuvable` })
+    throw createError({ statusCode: 404, message: `Métier « ${slug} » introuvable` })
   }
 
   const next: Metier = { ...update, slug, updatedAt: new Date().toISOString() }
