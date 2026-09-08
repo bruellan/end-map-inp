@@ -19,8 +19,14 @@
  */
 
 :root {
-  /** Hauteur de l'en-tête au repos. */
-  --hero-height: 62dvh;
+  /**
+   * Hauteur de l'en-tête au repos.
+   *
+   * 72 et non 62 : le collage garde sa taille d'origine et démarre sous
+   * le titre, il lui faut donc la place. Trop court, l'en-tête rognait
+   * la moitié basse de la composition.
+   */
+  --hero-height: 72dvh;
   /** Hauteur de départ de la séquence d'ouverture : plein écran. */
   --hero-height-intro: 100dvh;
   /**
@@ -46,15 +52,6 @@
    * après il ne bouge plus jusqu'à l'arrivée du panneau.
    */
   --hero-hold-start: calc(var(--hero-rise) - var(--hero-title-height));
-  /**
-   * Échelle du collage au repos, ancrée en bas.
-   *
-   * Sa hauteur découle de sa largeur (ratio fixe), pas de celle de
-   * l'en-tête : sur un écran court il remontait derrière le titre. La
-   * réduire le fait redescendre sans rogner le bas ni déformer la
-   * composition. Seul réglage à toucher si le débordement revient.
-   */
-  --hero-collage-scale: 0.72;
 }
 
 /**

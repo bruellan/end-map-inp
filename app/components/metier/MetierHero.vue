@@ -51,7 +51,7 @@ const pieces = computed(() =>
       entre la hauteur plein écran du départ et la hauteur définitive :
       à l'arrivée, l'échelle vaut exactement 1 et rien n'est déformé.
     -->
-    <div class="hero-stage absolute inset-x-0 bottom-0">
+    <div class="hero-stage absolute inset-x-0">
       <div
         class="relative left-[-13%] w-[126%]"
         :style="{ aspectRatio: COLLAGE_ASPECT }"
@@ -82,13 +82,17 @@ const pieces = computed(() =>
 
 <style scoped>
 /*
- * Le plateau couvre l'écran au départ (100 / 62) et retombe à l'échelle
- * de repos. Ancré en bas : le collage affleure toujours le bord
- * inférieur de l'en-tête, quelle que soit l'échelle.
+ * Le plateau part du bas du titre, et non du bas de l'en-tête.
+ *
+ * Sa hauteur découle de sa largeur — le ratio du groupe d'images est
+ * fixe — donc l'ancrer en bas le faisait remonter derrière le titre dès
+ * que l'en-tête raccourcissait. Ancré en haut, il commence là où le
+ * texte finit, à taille inchangée ; ce qui dépasse en bas est rogné par
+ * l'en-tête, comme dans la maquette.
  */
 .hero-stage {
-  transform: scale(var(--hero-collage-scale));
-  transform-origin: bottom center;
+  top: var(--hero-title-height);
+  transform-origin: top center;
   animation: heroDezoom 0.9s var(--ease-drawer) 1.9s both;
 }
 
@@ -97,7 +101,7 @@ const pieces = computed(() =>
     transform: scale(1.613);
   }
   to {
-    transform: scale(var(--hero-collage-scale));
+    transform: scale(1);
   }
 }
 
