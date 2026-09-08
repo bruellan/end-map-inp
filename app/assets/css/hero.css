@@ -34,6 +34,12 @@
   --hero-title-height: 288px;
   /** Chevauchement du panneau sur l'en-tête, qui laisse voir son arrondi. */
   --hero-panel-overlap: 32px;
+  /**
+   * Course du panneau : distance entre sa position de départ et le bas
+   * du titre, là où il doit s'arrêter. C'est la longueur de défilement
+   * « absorbée » par la remontée.
+   */
+  --hero-rise: calc(var(--hero-height) - var(--hero-panel-overlap) - var(--hero-title-height));
 }
 
 /**
@@ -123,5 +129,57 @@
   }
   to {
     margin-top: calc(var(--hero-height) - var(--hero-title-height) - var(--hero-panel-overlap));
+  }
+}
+
+/* ── Remontée du panneau, pilotée par le défilement ───────────────── */
+
+/**
+ * Pendant la remontée, le contenu ne doit pas défiler : seul le bord
+ * supérieur du panneau monte, jusqu'à venir se ranger sous le titre.
+ *
+ * Le contenu est donc translaté vers le bas exactement de ce qu'on
+ * défile, ce qui le laisse immobile à l'écran. La boîte du panneau, elle,
+ * n'est pas translatée : son bord monte normalement. Une fois la course
+ * parcourue, la translation est acquise et le défilement reprend son
+ * cours.
+ *
+ * `transform` et non `margin` : animer une marge redimensionnerait le
+ * document à chaque image, et la longueur de défilement dépend
+ * justement de cette hauteur — la boucle ne se stabiliserait pas.
+ *
+ * `padding-bottom` compense la translation, sans quoi les derniers
+ * pixels de contenu tomberaient hors du document.
+ */
+@supports (animation-timeline: scroll()) {
+  .hero-panel-content {
+    animation: heroContentHold linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 var(--hero-rise);
+  }
+
+  .hero-panel {
+    padding-bottom: var(--hero-rise);
+  }
+}
+
+@keyframes heroContentHold {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--hero-rise));
+  }
+}
+
+/**
+ * Sans les animations pilotées par le défilement, le panneau glisserait
+ * sous un titre qui ne bouge pas et masquerait la première section. On
+ * rend alors le titre solidaire de la page : il s'en va vers le haut
+ * comme le reste. Moins joli, mais rien n'est caché.
+ */
+@supports not (animation-timeline: scroll()) {
+  .hero-title {
+    position: relative;
   }
 }

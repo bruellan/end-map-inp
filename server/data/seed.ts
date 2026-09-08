@@ -76,7 +76,7 @@ const hotellerieRestaurationTourisme = {
       title: 'À propos',
       visible: true,
       separatorAfter: false,
-      body: 'Une filière ouverte et accessible, où le savoir-faire, l’engagement et l’expérience pèsent autant que les diplômes : on peut y entrer par un CAP...',
+      body: "Une filière ouverte et accessible, où le savoir-faire, l'engagement et l'expérience pèsent autant que les diplômes : on peut y entrer par un CAP, une reconversion, un contrat d'apprentissage ou une première saison, et progresser vite dès lors qu'on se rend indispensable. Les parcours n'y sont pas linéaires. Un commis devient chef de partie, un serveur passe maître d'hôtel, un réceptionniste prend la direction d'un établissement — souvent en quelques années, à force de terrain plus que de titres.\n\nC'est aussi un secteur qui recrute partout, du village touristique à la métropole, avec des besoins constants et des employeurs prêts à former. La contrepartie est connue : des horaires décalés, du rythme, une exigence de service qui ne se relâche pas. Mais pour qui aime le contact, le concret et le travail d'équipe, peu de filières offrent autant de portes d'entrée — ni autant de possibilités d'en ressortir avec un métier en main.",
       expandLabel: 'Lire la suite',
     },
     {

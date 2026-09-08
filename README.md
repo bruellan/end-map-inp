@@ -158,6 +158,26 @@ aperçus vidéo dans les cartes métier, déduite du rang et non stockée.
 La limite est assumée : une cinquième image décorative n'aurait pas de place définie,
 d'où le `.max(4)` dans le schéma plutôt qu'un silence à l'affichage.
 
+### L'en-tête : trois calques et un défilement absorbé
+
+L'en-tête n'est pas un bloc mais trois éléments qui s'intercalent dans l'empilement,
+`fond (z 0) < panneau (z 10) < titre (z 20)`. C'est ce qui permet au panneau de
+recouvrir le collage en remontant tout en passant sous le titre, qui reste lisible en
+haut. Leurs hauteurs vivent ensemble dans `app/assets/css/hero.css` : trois éléments
+répartis dans deux composants doivent s'accorder au pixel.
+
+Les deux calques qui portent le dégradé calent leur `background-size` sur la hauteur
+de l'en-tête plutôt que sur la leur. Sans ça chaque radial se dimensionne sur sa
+propre boîte et la jointure se voit.
+
+La remontée elle-même absorbe le défilement : pendant sa course, le contenu est
+translaté vers le bas d'exactement ce qu'on défile, donc il ne bouge pas à l'écran,
+tandis que le bord du panneau monte. C'est une animation pilotée par le défilement
+(`animation-timeline: scroll()`), en `transform` et non en `margin` — redimensionner
+le document à chaque image alors que la longueur de défilement dépend de cette
+hauteur ne se stabiliserait pas. Là où l'API n'existe pas, un `@supports` rend le
+titre solidaire de la page : moins joli, mais rien n'est masqué.
+
 ### Le bloc de fin, ou pourquoi les pourcentages mentent
 
 Trois pièges s'y sont succédé, tous liés au repère de référence.

@@ -142,6 +142,7 @@
 
   /* ── Animations ───────────────────────────────────────────────── */
   --animate-fade-in-up: fadeInUp 0.8s ease-out both;
+  --animate-pop: pop 0.4s var(--ease-drawer) both;
   --animate-appear-zoom-in: appear-zoom-in 0.3s var(--ease-drawer);
   --animate-disappear-zoom-out: disappear-zoom-out 0.2s var(--ease-drawer);
   --animate-slide-in-mobile: slideInMobile 0.4s cubic-bezier(0.22, 1, 0.36, 1);

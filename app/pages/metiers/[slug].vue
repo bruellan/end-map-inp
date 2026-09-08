@@ -76,31 +76,33 @@ useSeoMeta({
     <MetierHero :hero="metier.hero" />
 
     <div class="hero-panel bg-surface-light rounded-t-xl">
-      <!--
+      <div class="hero-panel-content">
+        <!--
         Sentinelle en tête du panneau : elle dit quand celui-ci atteint le
         haut de l'écran. Attachée au panneau plutôt qu'à une position
         calculée, pour ne pas dupliquer la hauteur de l'en-tête.
       -->
-      <div ref="panelTop" class="h-px" aria-hidden="true" />
+        <div ref="panelTop" class="h-px" aria-hidden="true" />
 
-      <!--
+        <!--
         TransitionGroup, et pas un simple v-for : quand l'éditeur
         réordonne ou masque une section, les voisines glissent à leur
         nouvelle position au lieu de sauter. L'animation FLIP est calculée
         par Vue, on ne fournit que les classes (voir transitions.css).
       -->
-      <TransitionGroup name="section-list" tag="div" class="flex flex-col gap-10 pt-12">
-        <div v-for="section in visibleSections" :key="section.id" class="px-4">
-          <component :is="sectionComponents[section.type]" :section="section" />
+        <TransitionGroup name="section-list" tag="div" class="flex flex-col gap-10 pt-12">
+          <div v-for="section in visibleSections" :key="section.id" class="px-4">
+            <component :is="sectionComponents[section.type]" :section="section" />
 
-          <!-- Le trait déborde la gouttière : pleine largeur dans la
+            <!-- Le trait déborde la gouttière : pleine largeur dans la
                maquette, d'où les marges négatives. -->
-          <hr
-            v-if="section.separatorAfter"
-            class="bg-surface-overlay-5 -mx-4 mt-10 h-0.5 border-0"
-          />
-        </div>
-      </TransitionGroup>
+            <hr
+              v-if="section.separatorAfter"
+              class="bg-surface-overlay-5 -mx-4 mt-10 h-0.5 border-0"
+            />
+          </div>
+        </TransitionGroup>
+      </div>
     </div>
 
     <!--

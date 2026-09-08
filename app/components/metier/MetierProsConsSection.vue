@@ -17,6 +17,14 @@ watch(
 )
 
 const activeTab = computed(() => props.section.tabs.find((tab) => tab.id === activeId.value))
+
+/**
+ * Léger basculement alterné, pour que les cartes aient l'air posées en
+ * pile plutôt qu'alignées au cordeau. Le motif se répète : quel que soit
+ * le nombre d'entrées, deux voisines penchent en sens opposés.
+ */
+const TILTS = [-2, 1.5, -1.5, 2]
+const tilt = (index: number) => TILTS[index % TILTS.length]
 </script>
 
 <template>
@@ -41,28 +49,38 @@ const activeTab = computed(() => props.section.tabs.find((tab) => tab.id === act
 
       <div :id="`tab-panel-${activeId}`" role="tabpanel" class="flex flex-col">
         <!--
-          Chaque carte se révèle pour elle-même avec un décalage croissant :
-          elles viennent se poser une à une en colonne au lieu d'apparaître
-          d'un bloc. `RevealOnScroll` déclenche au scroll et le keyframe
-          `fadeInUp` est en `both`, donc une carte reste masquée jusqu'à ce
-          que son délai s'écoule. La clé préfixée par l'onglet actif remonte
-          les cartes au changement d'onglet, ce qui rejoue la cascade.
+          Chaque carte « pop » pour elle-même, une à une : `RevealOnScroll`
+          déclenche au scroll et le keyframe `pop` est en `both`, donc une
+          carte reste masquée jusqu'à ce que son délai s'écoule. Le décalage
+          croissant les fait jaillir dans l'ordre. La clé préfixée par
+          l'onglet actif remonte les cartes au changement d'onglet, ce qui
+          rejoue la cascade.
 
-          Chevauchement de 8px entre les cartes (`itemSpacing: -8` dans la
-          maquette) : `-mt-2` sur toutes sauf la première, et un z-index
-          décroissant pour que la carte du dessus reste au-dessus.
+          Chevauchement de 8px (`-mt-2` sauf la première) et z-index
+          croissant : la dernière arrivée recouvre les précédentes, comme des
+          cartes qu'on empile.
+
+          Le wrapper porte l'apparition (le `scale` du keyframe) et
+          l'empilement ; la rotation vit sur l'`<article>` interne, sinon le
+          `transform` du keyframe l'écraserait (et `fill-mode: both` la
+          garderait écrasée une fois posée).
         -->
         <RevealOnScroll
           v-for="(entry, index) in activeTab?.entries ?? []"
           :key="`${activeId}-${entry.id}`"
-          as="article"
-          :delay="index * 90"
-          class="bg-surface-light shadow-s relative flex flex-col gap-2 rounded-lg p-6"
+          animation="animate-pop"
+          :delay="index * 140"
+          class="relative"
           :class="index > 0 && '-mt-2'"
-          :style="{ zIndex: (activeTab?.entries.length ?? 0) - index }"
+          :style="{ zIndex: index }"
         >
-          <h3 class="text-subheading text-primary font-semibold">{{ entry.title }}</h3>
-          <p class="text-body text-tertiary font-medium">{{ entry.body }}</p>
+          <article
+            class="bg-surface-light shadow-s flex flex-col gap-2 rounded-lg p-6"
+            :style="{ transform: `rotate(${tilt(index)}deg)` }"
+          >
+            <h3 class="text-subheading text-primary font-semibold">{{ entry.title }}</h3>
+            <p class="text-body text-tertiary font-medium">{{ entry.body }}</p>
+          </article>
         </RevealOnScroll>
 
         <p v-if="!activeTab?.entries.length" class="text-body text-tertiary">
