@@ -147,6 +147,8 @@ conditionné à une classe `.js` posée avant le premier rendu, donc la page res
 lisible sans JavaScript ; et `prefers-reduced-motion` est neutralisé par une seule
 règle globale — possible précisément parce que tout passe par CSS.
 
+Si projet plus lourd, j'aurais inclu framer-motion.
+
 ### Emoji : les Fluent 3D de Microsoft, servis sans copie
 
 La maquette utilise les Fluent Emoji **3D**, qui n'existent qu'en bitmap. Les jeux SVG
