@@ -53,7 +53,13 @@ function restart() {
 
 const isStatic = computed(() => reducedMotion.value === 'reduce' || props.section.items.length < 2)
 
-watch([paused, isStatic], () => (paused.value || isStatic.value ? pause() : resume()))
+/**
+ * À la reprise on repart de zéro plutôt que de reprendre en cours.
+ * `useIntervalFn` ne sait pas redémarrer sur un reliquat : sans ça la
+ * barre reprendrait à 60% pendant que le minuteur, lui, recompterait
+ * cinq secondes pleines.
+ */
+watch([paused, isStatic], ([isPaused, isFrozen]) => (isPaused || isFrozen ? pause() : restart()))
 onMounted(() => {
   if (!isStatic.value) resume()
 })
@@ -79,34 +85,33 @@ watch(isSwiping, (swiping, wasSwiping) => {
  * sans le déformer.
  */
 const COLLAGE = [
-  { left: '0.0%', top: '4.0%', width: '43.2%', height: '82.6%', rotate: '7deg' },
-  { left: '41.9%', top: '33.8%', width: '6.3%', height: '8.7%', rotate: '-41deg' },
-  { left: '7.2%', top: '6.0%', width: '17.5%', height: '15.4%', rotate: '15deg' },
-  { left: '10.5%', top: '51.7%', width: '25.8%', height: '32.1%', rotate: '-9deg' },
-  { left: '20.8%', top: '40.0%', width: '28.0%', height: '46.0%', rotate: '21deg' },
-  { left: '72.0%', top: '16.7%', width: '27.3%', height: '40.8%', rotate: '145deg' },
-  { left: '58.1%', top: '27.6%', width: '37.5%', height: '44.5%', rotate: '-12deg' },
+  // `z` est explicite : l'empilement demandé ne suit ni l'ordre du DOM ni
+  // celui du fichier Figma. Plus la valeur est haute, plus l'élément est
+  // au premier plan.
+  { left: '0.0%', top: '4.0%', width: '43.2%', height: '82.6%', rotate: '7deg', z: 1 },
+  { left: '41.9%', top: '33.8%', width: '6.3%', height: '8.7%', rotate: '-41deg', z: 6 },
+  // L'export « Oui chef » est vertical, texte de bas en haut : les 90°
+  // le redressent, les -15° restants reprennent l'inclinaison de la
+  // maquette. La boîte est donc haute et étroite — c'est la rotation qui
+  // la rend large à l'écran.
+  { left: '8.0%', top: '1.9%', width: '11.4%', height: '23.6%', rotate: '75deg', z: 8 },
+  { left: '10.5%', top: '51.7%', width: '25.8%', height: '32.1%', rotate: '-9deg', z: 9 },
+  { left: '20.8%', top: '40.0%', width: '28.0%', height: '46.0%', rotate: '21deg', z: 2 },
+  { left: '72.0%', top: '16.7%', width: '27.3%', height: '40.8%', rotate: '145deg', z: 3 },
+  { left: '58.1%', top: '27.6%', width: '37.5%', height: '44.5%', rotate: '-12deg', z: 4 },
   // L'export de l'herbe est déjà dans le bon sens : appliquer les 174°
   // relevés la retournerait. On garde l'inclinaison, pas le retournement.
-  { left: '62.2%', top: '35.6%', width: '37.8%', height: '64.4%', rotate: '-6deg' },
-  { left: '47.2%', top: '26.6%', width: '26.4%', height: '34.3%', rotate: '0deg' },
-  { left: '39.5%', top: '56.5%', width: '20.8%', height: '39.3%', rotate: '0deg' },
-  { left: '55.4%', top: '51.2%', width: '13.5%', height: '29.4%', rotate: '0deg' },
-  { left: '79.5%', top: '0.0%', width: '17.9%', height: '24.1%', rotate: '-15deg' },
+  { left: '62.2%', top: '35.6%', width: '37.8%', height: '64.4%', rotate: '-6deg', z: 5 },
+  { left: '47.2%', top: '26.6%', width: '26.4%', height: '34.3%', rotate: '0deg', z: 7 },
+  { left: '39.5%', top: '56.5%', width: '20.8%', height: '39.3%', rotate: '0deg', z: 10 },
+  { left: '55.4%', top: '51.2%', width: '13.5%', height: '29.4%', rotate: '0deg', z: 12 },
+  { left: '79.5%', top: '0.0%', width: '17.9%', height: '24.1%', rotate: '-15deg', z: 11 },
 ] as const
 
-/**
- * Figma liste les enfants du premier plan vers l'arrière, alors qu'en
- * DOM c'est le dernier élément qui passe devant. D'où le `zIndex`
- * décroissant : sans lui l'herbe recouvrirait le personnage qu'elle doit
- * encadrer.
- */
 const collageSlots = computed(() =>
-  COLLAGE.map((slot, index) => ({
-    slot,
-    url: props.section.collage[index] ?? '',
-    zIndex: COLLAGE.length - index,
-  })).filter((entry) => entry.url),
+  COLLAGE.map((slot, index) => ({ slot, url: props.section.collage[index] ?? '' })).filter(
+    (entry) => entry.url,
+  ),
 )
 </script>
 
@@ -140,18 +145,18 @@ const collageSlots = computed(() =>
         @focusout="paused = false"
       >
         <span
-          class="bg-surface-light/70 absolute top-0 h-[85%] w-[72%] -rotate-6 rounded-lg"
+          class="bg-surface-light/70 absolute top-0 h-[260px] w-[72%] -rotate-6 rounded-lg"
           aria-hidden="true"
         />
         <span
-          class="bg-surface-light/70 absolute top-0 h-[85%] w-[72%] rotate-6 rounded-lg"
+          class="bg-surface-light/70 absolute top-0 h-[260px] w-[72%] rotate-6 rounded-lg"
           aria-hidden="true"
         />
 
         <Transition name="zoom" mode="out-in">
           <article
             :key="activeTip?.id"
-            class="bg-surface-light shadow-s relative flex w-[65%] flex-col items-center gap-6 rounded-lg px-6 py-10 text-center"
+            class="bg-surface-light shadow-s relative flex h-[280px] w-[65%] flex-col items-center justify-center gap-6 rounded-lg px-6 text-center"
             :aria-label="`Conseil ${activeIndex + 1} sur ${section.items.length}`"
           >
             <BaseEmoji v-if="activeTip" :name="activeTip.icon" size="size-20" />
@@ -185,11 +190,12 @@ const collageSlots = computed(() =>
             :key="runId"
             class="bg-surface-dark block h-full w-full origin-left rounded-full"
             :style="
-              isStatic || paused
+              isStatic
                 ? { transform: 'scaleX(1)' }
                 : {
                     animation: `var(--animate-progress-fill)`,
                     animationDuration: `${AUTOPLAY_MS}ms`,
+                    animationPlayState: paused ? 'paused' : 'running',
                   }
             "
           />
@@ -221,7 +227,7 @@ const collageSlots = computed(() =>
             top: entry.slot.top,
             width: entry.slot.width,
             height: entry.slot.height,
-            zIndex: entry.zIndex,
+            zIndex: entry.slot.z,
             transform: `rotate(${entry.slot.rotate})`,
           }"
         />

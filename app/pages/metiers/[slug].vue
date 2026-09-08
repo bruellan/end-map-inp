@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { SectionType } from '#shared/schemas/metier'
 import { sectionComponents } from '~/components/metier/sectionRegistry'
 
 /**
@@ -25,6 +26,19 @@ if (error.value) {
 
 const visibleSections = computed(() => metier.value?.sections.filter((s) => s.visible) ?? [])
 
+/**
+ * Certaines sections sont conçues pour toucher le bas de la page — le
+ * bloc de fin porte un dégradé et un collage qui doivent affleurer le
+ * bord. Quand l'une d'elles termine la page, on retire la respiration
+ * finale, qui laisserait sinon une bande blanche sous l'illustration.
+ */
+const BLEEDS_TO_BOTTOM: ReadonlySet<SectionType> = new Set<SectionType>(['tips'])
+
+const endsFlush = computed(() => {
+  const last = visibleSections.value.at(-1)
+  return last ? BLEEDS_TO_BOTTOM.has(last.type) && !last.separatorAfter : false
+})
+
 useSeoMeta({
   title: () => (metier.value ? `${metier.value.hero.title} — Edumapper` : 'Edumapper'),
   description: () => metier.value?.hero.subtitle,
@@ -32,7 +46,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <article v-if="metier" class="pb-18">
+  <article v-if="metier" :class="endsFlush ? 'pb-0' : 'pb-18'">
     <MetierTopBar />
 
     <MetierHero :hero="metier.hero" />
