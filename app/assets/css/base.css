@@ -1,0 +1,80 @@
+/**
+ * Réglages de base, appliqués avant tout composant.
+ */
+
+@layer base {
+  html {
+    /* Le header sticky ne doit pas masquer la cible d'une ancre. */
+    scroll-behavior: smooth;
+    scroll-padding-top: --spacing(20);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-surface-light);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    /* Évite le rebond horizontal sur les carrousels mobile. */
+    overflow-x: hidden;
+  }
+
+  /* Cible tactile minimale de 44px sur les contrôles interactifs. */
+  button,
+  a[href],
+  [role='button'] {
+    touch-action: manipulation;
+  }
+
+  /* Anneau de focus visible uniquement au clavier. */
+  :focus-visible {
+    outline: 2px solid var(--color-actions-primary);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-text-highlight);
+    color: var(--color-text-primary);
+  }
+}
+
+@layer utilities {
+  /**
+   * Masque la scrollbar sur les carrousels horizontaux, sans désactiver
+   * le scroll lui-même.
+   */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/**
+ * Accessibilité : on neutralise le mouvement quand l'utilisateur l'a
+ * demandé au niveau de l'OS. Une seule règle globale plutôt qu'un garde
+ * par composant — c'est la raison pour laquelle toutes les animations du
+ * projet passent par CSS et non par du JS impératif.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/**
+ * Scroll-reveal.
+ *
+ * Le masquage est conditionné à `.js`, posée en <head> avant le premier
+ * rendu. Sans JavaScript l'IntersectionObserver ne tournera jamais :
+ * la règle ne s'applique pas et le contenu reste visible.
+ */
+.js [data-reveal='pending'] {
+  opacity: 0;
+}

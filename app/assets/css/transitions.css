@@ -1,0 +1,103 @@
+/**
+ * Classes de transition pour <Transition> et <TransitionGroup>.
+ *
+ * Même convention de nommage que chez Edumapper (`<Transition name="x">`
+ * génère `.x-enter-from`, `.x-leave-to`, etc.). Tout est déclaratif :
+ * aucun moteur d'animation JS dans le projet.
+ *
+ * `prefers-reduced-motion` est géré globalement dans base.css.
+ */
+
+/* ── `fade` : apparition simple ────────────────────────────────── */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s var(--ease-out);
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* ── `slide-up` : contenu qui monte (sections, cartes) ─────────── */
+.slide-up-enter-active {
+  transition:
+    opacity 0.3s var(--ease-drawer),
+    transform 0.3s var(--ease-drawer);
+}
+.slide-up-leave-active {
+  transition:
+    opacity 0.2s var(--ease-in),
+    transform 0.2s var(--ease-in);
+}
+.slide-up-enter-from,
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* ── `sheet` : bottom sheet mobile ─────────────────────────────── */
+.sheet-enter-active {
+  animation: var(--animate-slide-up-mobile);
+}
+.sheet-leave-active {
+  animation: var(--animate-slide-down-mobile);
+}
+
+/* ── `overlay` : voile derrière une sheet ou une modale ────────── */
+.overlay-enter-active {
+  animation: var(--animate-overlay-show);
+}
+.overlay-leave-active {
+  transition: opacity 0.15s var(--ease-in);
+}
+.overlay-leave-to {
+  opacity: 0;
+}
+
+/* ── `zoom` : popovers, tooltips, toasts ───────────────────────── */
+.zoom-enter-active {
+  animation: var(--animate-appear-zoom-in);
+}
+.zoom-leave-active {
+  animation: var(--animate-disappear-zoom-out);
+}
+
+/* ── `collapse` : accordéon (grid-template-rows, pas de JS) ────── */
+.collapse-enter-active,
+.collapse-leave-active {
+  display: grid;
+  transition: grid-template-rows 0.3s var(--ease-drawer);
+}
+.collapse-enter-from,
+.collapse-leave-to {
+  grid-template-rows: 0fr;
+}
+.collapse-enter-to,
+.collapse-leave-from {
+  grid-template-rows: 1fr;
+}
+
+/**
+ * `section-list` : réordonnancement de sections dans l'éditeur.
+ *
+ * `-move` est la classe FLIP de <TransitionGroup> : Vue mesure les
+ * positions avant/après et anime le delta. C'est ce qui rend le
+ * déplacement d'une section fluide sans une ligne de JS d'animation.
+ */
+.section-list-move,
+.section-list-enter-active,
+.section-list-leave-active {
+  transition:
+    opacity 0.25s var(--ease-drawer),
+    transform 0.25s var(--ease-drawer);
+}
+.section-list-enter-from,
+.section-list-leave-to {
+  opacity: 0;
+  transform: scale(0.98) translateY(6px);
+}
+/* Sort du flux pour que les voisins glissent à sa place sans à-coup. */
+.section-list-leave-active {
+  position: absolute;
+  width: 100%;
+}
