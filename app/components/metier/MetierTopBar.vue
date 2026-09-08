@@ -30,7 +30,7 @@ async function share() {
 </script>
 
 <template>
-  <div class="relative flex items-center justify-between px-4 py-3">
+  <div class="flex items-center justify-between px-4 py-3">
     <button
       type="button"
       aria-label="Revenir en arrière"

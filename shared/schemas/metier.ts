@@ -178,8 +178,16 @@ export const sectionSchema = z.discriminatedUnion('type', [
 
 /** En-tête de la page, hors liste de sections car toujours présent. */
 export const metierHeroSchema = z.object({
+  /** Surtitre discret au-dessus du titre — « Filière » dans la maquette. */
+  eyebrow: z.string(),
   title: z.string(),
   subtitle: z.string(),
+  /**
+   * Collage illustré du fond d'en-tête. Même composition que celle du
+   * bloc de fin, mais liste distincte : l'équipe éditoriale doit pouvoir
+   * les faire diverger sans que l'un impose l'autre.
+   */
+  collage: z.array(imageRefSchema).max(12),
 })
 
 export const metierSchema = z.object({

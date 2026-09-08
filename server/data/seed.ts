@@ -16,8 +16,25 @@ import type { Metier } from '#shared/schemas/metier'
 const hotellerieRestaurationTourisme = {
   slug: 'hotellerie-restauration-tourisme',
   hero: {
-    title: 'Hôtellerie,\nRestauration & Tourisme',
+    eyebrow: 'Filière',
+    title: 'Hôtellerie\nRestauration\nTourisme',
     subtitle: 'Et si ton métier c’était de rendre\nles gens heureux ?',
+    // Même composition que le bloc de fin : la maquette réutilise les
+    // mêmes illustrations d'un bout à l'autre de la page.
+    collage: [
+      '/images/palmtree.png',
+      '/images/michelin-star.png',
+      '/images/oui-chef.png',
+      '/images/anne-sophie-pic.png',
+      '/images/palmtree.png',
+      '/images/key.png',
+      '/images/jennifer-1.png',
+      '/images/grass.png',
+      '/images/white-glove.png',
+      '/images/plane-window.png',
+      '/images/ratatouille.png',
+      '/images/bell.png',
+    ],
   },
   sections: [
     {

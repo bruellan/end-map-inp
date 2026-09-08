@@ -34,6 +34,24 @@ const visibleSections = computed(() => metier.value?.sections.filter((s) => s.vi
  */
 const BLEEDS_TO_BOTTOM: ReadonlySet<SectionType> = new Set<SectionType>(['tips'])
 
+/**
+ * La barre d'actions n'apparaît qu'une fois le panneau blanc remonté
+ * jusqu'en haut : avant, elle se superposerait au titre.
+ *
+ * Une sentinelle placée en tête du panneau sert de repère — on regarde
+ * si elle est passée au-dessus du bord haut, plutôt que de comparer une
+ * position de défilement à une hauteur d'en-tête qu'il faudrait mesurer.
+ */
+const panelTop = useTemplateRef<HTMLElement>('panelTop')
+const showTopBar = ref(false)
+useIntersectionObserver(
+  panelTop,
+  ([entry]) => {
+    if (entry) showTopBar.value = entry.boundingClientRect.top <= 0
+  },
+  { threshold: 0 },
+)
+
 const endsFlush = computed(() => {
   const last = visibleSections.value.at(-1)
   return last ? BLEEDS_TO_BOTTOM.has(last.type) && !last.separatorAfter : false
@@ -46,25 +64,56 @@ useSeoMeta({
 </script>
 
 <template>
-  <article v-if="metier" :class="endsFlush ? 'pb-0' : 'pb-18'">
-    <MetierTopBar />
+  <article v-if="metier" class="relative" :class="endsFlush ? 'pb-0' : 'pb-18'">
+    <!--
+      En-tête collant : il reste en place pendant que le panneau blanc
+      remonte par-dessus. Une fois recouvert, le défilement reprend son
+      cours normal — le titre n'a pas bougé d'un pixel entre-temps.
+    -->
+    <div class="sticky top-0 z-0">
+      <MetierHero :hero="metier.hero" />
+    </div>
 
-    <MetierHero :hero="metier.hero" />
+    <div class="bg-surface-light relative z-10 -mt-8 rounded-t-xl">
+      <!--
+        Sentinelle en tête du panneau : elle dit quand celui-ci atteint le
+        haut de l'écran. Attachée au panneau plutôt qu'à une position
+        calculée, pour ne pas dupliquer la hauteur de l'en-tête.
+      -->
+      <div ref="panelTop" class="h-px" aria-hidden="true" />
+
+      <!--
+        TransitionGroup, et pas un simple v-for : quand l'éditeur
+        réordonne ou masque une section, les voisines glissent à leur
+        nouvelle position au lieu de sauter. L'animation FLIP est calculée
+        par Vue, on ne fournit que les classes (voir transitions.css).
+      -->
+      <TransitionGroup name="section-list" tag="div" class="flex flex-col gap-10 pt-12">
+        <div v-for="section in visibleSections" :key="section.id" class="px-4">
+          <component :is="sectionComponents[section.type]" :section="section" />
+
+          <!-- Le trait déborde la gouttière : pleine largeur dans la
+               maquette, d'où les marges négatives. -->
+          <hr
+            v-if="section.separatorAfter"
+            class="bg-surface-overlay-5 -mx-4 mt-10 h-0.5 border-0"
+          />
+        </div>
+      </TransitionGroup>
+    </div>
 
     <!--
-      TransitionGroup, et pas un simple v-for : quand l'éditeur
-      réordonne ou masque une section, les voisines glissent à leur
-      nouvelle position au lieu de sauter. L'animation FLIP est calculée
-      par Vue, on ne fournit que les classes (voir transitions.css).
+      La barre d'actions ne paraît qu'une fois le panneau remonté : avant,
+      elle se superposerait au titre. En `fixed`, donc contrainte à la
+      largeur de la maquette comme le reste de la page.
     -->
-    <TransitionGroup name="section-list" tag="div" class="relative flex flex-col gap-10 pt-12">
-      <div v-for="section in visibleSections" :key="section.id" class="px-4">
-        <component :is="sectionComponents[section.type]" :section="section" />
-
-        <!-- Le trait déborde la gouttière : pleine largeur dans la
-             maquette, d'où les marges négatives. -->
-        <hr v-if="section.separatorAfter" class="bg-surface-overlay-5 -mx-4 mt-10 h-0.5 border-0" />
+    <Transition name="fade">
+      <div
+        v-if="showTopBar"
+        class="bg-surface-light/80 fixed inset-x-0 top-0 z-30 mx-auto max-w-[402px] backdrop-blur-sm"
+      >
+        <MetierTopBar />
       </div>
-    </TransitionGroup>
+    </Transition>
   </article>
 </template>

@@ -78,7 +78,14 @@ export function useMetierDraft(
     }
 
     const saved = await persist(payload)
-    if (saved) pristine.value = JSON.stringify(saved)
+    if (saved) {
+      // On réaligne le brouillon sur la réponse serveur pour que les deux
+      // sérialisations coïncident : `JSON.stringify` est sensible à l'ordre
+      // des clés, et la réponse du PUT ne le range pas comme la donnée servie
+      // au GET. Sans ça, `isDirty` repasserait à `true` juste après un save.
+      draft.value = structuredClone(saved)
+      pristine.value = JSON.stringify(saved)
+    }
   }
 
   return { draft, isDirty, isSaving, error, reset, moveSection, toggleVisibility, save }

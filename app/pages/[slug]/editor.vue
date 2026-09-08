@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { COLLAGE_SLOT_COUNT } from '~/components/metier/collageLayout'
 /**
  * Éditeur de page métier.
  *
@@ -74,16 +75,25 @@ useSeoMeta({ title: () => `Éditeur — ${draft.value?.hero.title ?? slug.value}
 
     <section class="border-border-light mb-6 space-y-4 rounded-md border p-4">
       <h2 class="text-primary text-sm font-bold">En-tête</h2>
+      <BaseField v-slot="{ id }" label="Surtitre" hint="Petite étiquette au-dessus du titre.">
+        <BaseInput :id="id" v-model="draft.hero.eyebrow" placeholder="Filière" />
+      </BaseField>
       <BaseField
         v-slot="{ id }"
         label="Titre"
         hint="Les retours à la ligne sont conservés à l’affichage."
       >
-        <BaseTextarea :id="id" v-model="draft.hero.title" :rows="2" />
+        <BaseTextarea :id="id" v-model="draft.hero.title" :rows="3" />
       </BaseField>
       <BaseField v-slot="{ id }" label="Sous-titre">
         <BaseTextarea :id="id" v-model="draft.hero.subtitle" :rows="2" />
       </BaseField>
+      <EditorImageSlots
+        v-model="draft.hero.collage"
+        :count="COLLAGE_SLOT_COUNT"
+        label="Collage illustré du fond"
+        hint="Positions et rotations fixées par la maquette. Laisser vide pour ne rien afficher."
+      />
     </section>
 
     <h2 class="text-primary mb-3 text-sm font-bold">
